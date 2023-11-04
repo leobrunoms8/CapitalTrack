@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>Canva/Login_Backgound_002.png</file>
+  </qresource>
+  <qresource prefix="newPrefix">
+    <file>Canva/Login_Background_001.png</file>
+  </qresource>
+</RCC>
