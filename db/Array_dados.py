@@ -1,37 +1,64 @@
-import re
+import mysql.connector
 
-class DadosParser:
-    def __init__(self, dados):
-        self.dados = dados
-        self.resultados = []
+class MySQLDatabase:
+    def __init__(self, host, user, password, database):
+        self.connection = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database
+        )
+        self.cursor = self.connection.cursor()
 
-    def processar_dados(self):
-        # Padrão para dividir a informação
-        padrao = re.compile(r'(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)')
+    def create_table(self, table_name, columns):
+        # Criar a tabela
+        create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)})"
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
 
-        for linha_dados in self.dados:
-            # Converter a linha para uma string (caso seja uma lista)
-            informacao = ' '.join(map(str, linha_dados))
+    def insert_data(self, table_name, data):
+        # Inserir dados na tabela
+        insert_query = f"INSERT INTO {table_name} VALUES ({', '.join(['%s']*len(data[0]))})"
+        self.cursor.executemany(insert_query, data)
+        self.connection.commit()
 
-            # Aplicar o padrão à string
-            correspondencia = padrao.match(informacao)
+    def close_connection(self):
+        # Fechar a conexão com o banco de dados
+        self.connection.close()
 
-            # Verificar se houve correspondência
-            if correspondencia:
-                # Extrair informações específicas
-                dados_array = [
-                    correspondencia.group(1).strip(),
-                    correspondencia.group(2).strip(),
-                    correspondencia.group(3).strip(),
-                    correspondencia.group(4).strip(),
-                    correspondencia.group(5).strip(),
-                    correspondencia.group(6).strip(),
-                ]
 
-                # Adicionar os dados ao resultado
-                self.resultados.append(dados_array)
-            else:
-                print(f"Não houve correspondência com o padrão para a linha: {linha_dados}")
+class Main:
+    def __init__(self):
+        self.db = MySQLDatabase(
+            host='seu_host',
+            user='seu_usuario',
+            password='sua_senha',
+            database='seu_banco_de_dados'
+        )
 
-    def obter_resultados(self):
-        return self.resultados
+    def create_table_from_list(self, table_name, columns, data):
+        # Criar a tabela no banco de dados
+        self.db.create_table(table_name, columns)
+
+        # Inserir dados na tabela
+        self.db.insert_data(table_name, data)
+
+    def run_example(self):
+        table_name = 'exemplo_tabela'
+        columns = ['id INT AUTO_INCREMENT PRIMARY KEY', 'nome VARCHAR(255)', 'idade INT']
+        data = [
+            (1, 'João', 25),
+            (2, 'Maria', 30),
+            (3, 'Pedro', 22)
+        ]
+
+        # Criar a tabela e inserir dados
+        self.create_table_from_list(table_name, columns, data)
+
+        # Fechar a conexão com o banco de dados
+        self.db.close_connection()
+
+
+if __name__ == "__main__":
+    main = Main()
+    main.run_example()
