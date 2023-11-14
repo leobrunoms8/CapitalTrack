@@ -1,36 +1,20 @@
-import numpy as np
+import yfinance as yf
 
-class ProcessadorDeStrings:
-    def __init__(self, data):
-        self.data = data
+def obter_preco_acao(ticker):
+    # Cria um objeto Ticker para a ação desejada
+    acao = yf.Ticker(ticker)
 
-    def tabulacao_dados(self):
-        # Lista para armazenar as informações extraídas
-        informacoes = []
+    # Obtém os dados históricos mais recentes (último dia)
+    dados_historicos = acao.history(period='1d')
 
-        # Itera sobre cada lista na lista principal
-        for lista in self.data:
-            # Itera sobre cada string na lista interna
-            for linha in lista:
-                
-                # Adiciona a lista resultante à lista de informações
-                informacoes.append(linha)
+    # Obtém o preço de fechamento mais recente
+    ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
 
-        # Converte a lista de listas para um array NumPy
-        informacoes_np = np.array(informacoes)
+    return ultimo_preco_fechamento
 
-        # Retorna o array resultante
-        return informacoes_np
+# Substitua 'AAPL' pelo símbolo da ação desejada
+ticker_acao = 'AAPL'
 
-# Criar uma instância da classe
-processador = ProcessadorDeStrings(
-    vazio   AOD     Abrdn Total Dynamic Dividend Fund       21.11.2023      0,0575  vazio   30.11.2023      9,26%
-vazio   HQL     Abrdn Life Sciences Investors   21.11.2023      0,3     vazio   10.01.2024      10,11
-)
-
-# Chama o método tabulacao_dados
-resultado = processador.tabulacao_dados()
-
-# Imprime a matriz indexada no terminal
-print("Matriz Indexada:")
-print(resultado[3][3])
+# Obtém e imprime o preço da ação
+preco_acao = obter_preco_acao(ticker_acao)
+print(f"O preço atual da ação {ticker_acao} é: {preco_acao}")
