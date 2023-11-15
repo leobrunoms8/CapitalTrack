@@ -17,7 +17,7 @@ lista_simbolos = coletor.obter_lista_de_simbolos()
 # Imprimir a lista no terminal
 print("Lista de Símbolos:")
 for simbolo in lista_simbolos:
-    print(simbolo)
+    print(simbolo, " do tipo: ", type(simbolo))
 
 # Instacia classe para coleta dos nomes das empresas
 coletor = Coleta_Empresa_Na_Tabela_De_Raspagem(

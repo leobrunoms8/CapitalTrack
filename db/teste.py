@@ -13,7 +13,7 @@ def obter_preco_acao(ticker):
     return ultimo_preco_fechamento
 
 # Substitua 'AAPL' pelo símbolo da ação desejada
-ticker_acao = 'AAPL'
+ticker_acao = 'BGH'
 
 # Obtém e imprime o preço da ação
 preco_acao = obter_preco_acao(ticker_acao)

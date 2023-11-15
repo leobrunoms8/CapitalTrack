@@ -7,21 +7,30 @@ class Analise_De_Simbolos:
         self.simbolos_nao_encontrados = []
 
     def verificar_simbolos(self):
-        for simbolo in self.lista_simbolos:
+        for linha in self.lista_simbolos:
             try:
-                # Tenta criar um objeto Ticker para o símbolo
-                acao = yf.Ticker(simbolo)
+                # Imprime qual Siímbolo está sendo Analisado no momento
 
-                # Tenta obter o nome da empresa associada ao símbolo
-                nome_empresa = acao.info['longName']
+                print("Analisando: '",linha,"'")
+
+                # Tenta criar um objeto Ticker para o símbolo
+                acao = yf.Ticker(linha)
+
+                # Obtém os dados históricos mais recentes (último dia)
+                dados_historicos = acao.history(period='1d')
+
+                # Obtém o preço de fechamento mais recente
+                ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
+                print(ultimo_preco_fechamento)
 
                 # Adiciona o símbolo aos símbolos encontrados
-                self.simbolos_encontrados.append({'simbolo': simbolo, 'empresa': nome_empresa})
+                self.simbolos_encontrados.append(linha)
 
-            except yf.TickerError:
-                # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
-                self.simbolos_nao_encontrados.append(simbolo)
-
+            except Exception as e:
+                     # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
+                    self.simbolos_nao_encontrados.append(linha)
+                    print(f"Erro ao obter o nome da empresa para o símbolo {linha}: {e}")
+               
     def obter_resultados(self):
         return {
             'simbolos_encontrados': self.simbolos_encontrados,
