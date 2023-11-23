@@ -5,14 +5,14 @@ conn = mysql.connector.connect(
     host="localhost",
     user="developer",
     password="Leo140707",
-    database="Stocks"
+    database="RaspagemPuraDeDados"
 )
 
 # Criar um cursor para executar consultas SQL
 cursor = conn.cursor()
 
 # Substitua "sua_tabela" pelo nome da tabela que você deseja apagar
-tabela_a_apagar = 'Dividendos'
+tabela_a_apagar = 'raspagem'
 
 # Comando SQL para apagar a tabela
 query = f"DROP TABLE {tabela_a_apagar}"

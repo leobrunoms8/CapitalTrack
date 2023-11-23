@@ -1,30 +1,74 @@
-from Investing.extract_Dados import InvestingScraper
-from db.Info_Data import InfoList
-from Investing.db_Investing_Dividendos.Raspagem_Pura_De_Dados import criar_banco_de_dados
-from Investing.db_Investing_Dividendos.Criar_Tabela_Raspagem import criar_tabela
-from Investing.db_Investing_Dividendos.Inserir_Dados_Raspagem import InsercaoDados
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QTableWidgetItem
+from FrontEnd.Interface.Window_Main import Ui_MainWindow
+from FrontEnd.Interface.Window_Listas import Ui_Listas
+#from Investing.RasparDados import RaspagemInvesting
+import mysql.connector
 
-# Criar uma instância da classe InvestingScraper
-investing_scraper = InvestingScraper("https://br.investing.com/dividends-calendar/")
 
-# Chamar o método scrape_data para obter a lista de dados
-dados = investing_scraper.scrape_data()
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
-# Imprimir dados obtidos no Investing.com no terminal
-for linha in dados:
-    print("\t".join(linha))
+        # Crie uma instância da classe de design gerada
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-# Tratar Lista
-infoList = InfoList(dados)
-infoList.print_info()
+        # Conecte os sinais dos itens de menu às funções correspondentes
+        self.ui.actionTela_Cheia.triggered.connect(self.exibir_tela_cheia)
+        self.ui.actionListas.triggered.connect(self.exibir_listas)
 
-# Cria um Banco de Dados com o Nome Raspagem de Dados Pura 
-# Chame a função para criar o banco de dados
-criar_banco_de_dados()
+    def exibir_listas(self):
+        # Exemplo de uso da classe e do método
+        #url = "https://br.investing.com/dividends-calendar/"
+        #raspagem = RaspagemInvesting(url)
+        #raspagem.realizar_raspagem()
 
-# Chame a função para criar a tabela raspagem
-criar_tabela()
+        # Conecte ao banco de dados MySQL
+        db = mysql.connector.connect(
+            host="localhost",
+            user="developer",
+            password="Leo140707",
+            database="RaspagemPuraDeDados"
+        )
 
-# Chame a função para inserir os dados 
-insercao = InsercaoDados(dados)
-insercao.inserir_dados()
+        cursor = db.cursor()
+
+        # Execute uma consulta para obter dados da tabela "sua_tabela"
+        cursor.execute("SELECT * FROM raspagem")
+
+        # Recupere os resultados
+        result = cursor.fetchall()
+
+        # Feche a conexão com o banco de dados
+        db.close()
+
+        # Exiba os resultados na QTableWidget
+        self.ui.listas_window = QDialog()
+        self.ui_listas = Ui_Listas()
+        self.ui_listas.setupUi(self.ui.listas_window)
+
+        # Limpe as tabelas existentes
+        self.ui_listas.tableWidget.setRowCount(0)
+        self.ui_listas.tableWidget_2.setRowCount(0)
+        self.ui_listas.tableWidget_3.setRowCount(0)
+
+        # Preencha a primeira tabela (Raspagem)
+        self.ui_listas.tableWidget.setRowCount(len(result))
+        for row_index, row_data in enumerate(result):
+            for col_index, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.ui_listas.tableWidget.setItem(row_index, col_index, item)
+
+        self.ui.listas_window.show()
+
+    def exibir_tela_cheia(self):
+        # Implemente a lógica para exibir a tela cheia aqui
+        pass
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    sys.exit(app.exec_())
+

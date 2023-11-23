@@ -17,6 +17,15 @@ class Ui_MainWindow(object):
         MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 791, 201))
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -45,6 +54,8 @@ class Ui_MainWindow(object):
         self.actionTela_Cheia.setObjectName("actionTela_Cheia")
         self.actionSair = QtWidgets.QAction(MainWindow)
         self.actionSair.setObjectName("actionSair")
+        self.actionListas = QtWidgets.QAction(MainWindow)
+        self.actionListas.setObjectName("actionListas")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addSeparator()
@@ -53,16 +64,20 @@ class Ui_MainWindow(object):
         self.menuEditar.addAction(self.actionEditar)
         self.menuEditar.addAction(self.actionExcluir)
         self.menuExibir.addAction(self.actionTela_Cheia)
+        self.menuExibir.addAction(self.actionListas)
         self.menubar.addAction(self.menuArquivo.menuAction())
         self.menubar.addAction(self.menuEditar.menuAction())
         self.menubar.addAction(self.menuExibir.menuAction())
 
         self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Carteira"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
         self.menuEditar.setTitle(_translate("MainWindow", "Editar"))
         self.menuExibir.setTitle(_translate("MainWindow", "Exibir"))
@@ -73,6 +88,7 @@ class Ui_MainWindow(object):
         self.actionExcluir.setText(_translate("MainWindow", "Excluir..."))
         self.actionTela_Cheia.setText(_translate("MainWindow", "Tela Cheia"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))
+        self.actionListas.setText(_translate("MainWindow", "Listas"))
 
 
 if __name__ == "__main__":
