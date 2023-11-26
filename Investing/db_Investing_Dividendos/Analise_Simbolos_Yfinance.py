@@ -4,7 +4,6 @@ class Analise_De_Simbolos:
     def __init__(self, lista_simbolos):
         self.lista_simbolos = lista_simbolos
         self.simbolos_encontrados = []
-        self.simbolos_nao_encontrados = []
 
     def verificar_simbolos(self):
         for linha in self.lista_simbolos:
@@ -28,12 +27,9 @@ class Analise_De_Simbolos:
 
             except Exception as e:
                      # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
-                    self.simbolos_nao_encontrados.append(linha)
-                    print(f"Erro ao obter o nome da empresa para o símbolo {linha}: {e}")
+                    print(f"Erro ao consultar simbolo {linha}: {e}")
                
     def obter_resultados(self):
-        return {
-            'simbolos_encontrados': self.simbolos_encontrados,
-            'simbolos_nao_encontrados': self.simbolos_nao_encontrados
-        }
+        return self.simbolos_encontrados
+        
 

@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QTableWidgetItem
 from FrontEnd.Interface.Window_Main import Ui_MainWindow
 from FrontEnd.Interface.Window_Listas import Ui_Listas
-#from Investing.RasparDados import RaspagemInvesting
+from Investing.RasparDados import RaspagemInvesting
 import mysql.connector
 
 
@@ -17,6 +17,8 @@ class MainWindow(QMainWindow):
         # Conecte os sinais dos itens de menu às funções correspondentes
         self.ui.actionTela_Cheia.triggered.connect(self.exibir_tela_cheia)
         self.ui.actionListas.triggered.connect(self.exibir_listas)
+
+        
 
     def exibir_listas(self):
         # Exemplo de uso da classe e do método
@@ -61,6 +63,14 @@ class MainWindow(QMainWindow):
                 self.ui_listas.tableWidget.setItem(row_index, col_index, item)
 
         self.ui.listas_window.show()
+        # Conecte o clique do botão à função que executa o código desejado
+        self.ui_listas.pushButton_2.clicked.connect(self.executar_raspagem)
+
+    def executar_raspagem(self):
+        # Executar ao clicar no pushButton_2
+        url = "https://br.investing.com/dividends-calendar/"
+        raspagem = RaspagemInvesting(url)
+        raspagem.realizar_raspagem()
 
     def exibir_tela_cheia(self):
         # Implemente a lógica para exibir a tela cheia aqui

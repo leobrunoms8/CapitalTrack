@@ -1,8 +1,8 @@
-from db_Investing_Dividendos.extract_Dados import InvestingScraper
-from db_Investing_Dividendos.Info_Data import InfoList
-from db_Investing_Dividendos.Raspagem_Pura_De_Dados import criar_banco_de_dados
-from db_Investing_Dividendos.Criar_Tabela_Raspagem import criar_tabela
-from db_Investing_Dividendos.Inserir_Dados_Raspagem import InsercaoDados
+from .db_Investing_Dividendos.extract_Dados import InvestingScraper
+from .db_Investing_Dividendos.Info_Data import InfoList
+from .db_Investing_Dividendos.Raspagem_Pura_De_Dados import criar_banco_de_dados
+from .db_Investing_Dividendos.Criar_Tabela_Raspagem import criar_tabela
+from .db_Investing_Dividendos.Inserir_Dados_Raspagem import InsercaoDados
 
 class RaspagemInvesting:
     def __init__(self, url):

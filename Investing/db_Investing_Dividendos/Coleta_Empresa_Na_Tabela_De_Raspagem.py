@@ -21,26 +21,30 @@ class Coleta_Empresa_Na_Tabela_De_Raspagem:
     def desconectar_banco_de_dados(self):
         # Fechar o cursor e a conexão com o banco de dados
         self.cursor.close()
-        self.conexao.close()
+        self.conexao.close()    
 
-    def obter_lista_de_empresa(self):
-        # Conectar ao banco de dados
+    def executar_consulta(self, encontrados):
+        self.encontrados = encontrados
+        resultados = []
+
         self.conectar_banco_de_dados()
+        
+        for string in self.encontrados:
+            consulta_sql = f"SELECT simbolo, nome_da_empresa FROM raspagem WHERE simbolo = '{string}'"
 
-        # Definir a consulta SQL para selecionar a coluna 'nome da empresa'
-        consulta_sql = f"SELECT nome_da_empresa FROM {self.tabela}"
+            self.cursor.execute(consulta_sql)
 
-        # Executar a consulta SQL
-        self.cursor.execute(consulta_sql)
+            resultado = self.cursor.fetchall()
 
-        # Buscar todos os resultados da coluna 'simbolo'
-        resultados = self.cursor.fetchall()
-
-        # Criar a lista de símbolos
-        lista_de_empresa = [resultado[0] for resultado in resultados]
+            if resultado:
+                simbolo, nome_empresa = resultado[0] if resultado else (None, None)
+                resultados.append({
+                    simbolo,
+                    nome_empresa
+                })
 
         # Desconectar do banco de dados
         self.desconectar_banco_de_dados()
 
-        # Retornar a lista de símbolos
-        return lista_de_empresa
+        return resultados
+
