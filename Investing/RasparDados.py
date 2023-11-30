@@ -3,6 +3,7 @@ from .db_Investing_Dividendos.Info_Data import InfoList
 from .db_Investing_Dividendos.Raspagem_Pura_De_Dados import criar_banco_de_dados
 from .db_Investing_Dividendos.Criar_Tabela_Raspagem import criar_tabela
 from .db_Investing_Dividendos.Inserir_Dados_Raspagem import InsercaoDados
+from .Conferencia_De_Dados_De_Entrada import AnaliseSimbolosManager
 
 class RaspagemInvesting:
     def __init__(self, url):
@@ -31,5 +32,12 @@ class RaspagemInvesting:
         # Chame a função para inserir os dados
         insercao = InsercaoDados(self.dados)
         insercao.inserir_dados()
+
+        # Info conexão
+        info_conexao_raspagem = ["localhost", "developer", "Leo140707", "RaspagemPuraDeDados", "raspagem"]
+
+        # Cria uma instância da classe e executa o método
+        analise_manager = AnaliseSimbolosManager(info_conexao_raspagem)
+        analise_manager.executar_analise()
 
 

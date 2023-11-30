@@ -1,6 +1,6 @@
 from Coleta_Simbolo_Na_Tabela_De_Raspagem import Coleta_Simbolo_Na_Tabela_De_Raspagem
 from Coleta_Empresa_Na_Tabela_De_Raspagem import Coleta_Empresa_Na_Tabela_De_Raspagem
-#from Correção_de_Banco_de_Dados import Correcao_de_banco_de_dados
+from Correção_de_Banco_de_Dados import Correcao_de_banco_de_dados
 from Gerenciador_Tabela_De_Acoes import GerenciadorTabelaAcoes
 from Analise_Simbolos_Yfinance import Analise_De_Simbolos
 
@@ -63,15 +63,6 @@ gerenciador_acoes.criar_tabela()
 # Inserir empresas em lista de empresas conferidas pelo Yfinance
 gerenciador_acoes.inserir_linha(empresas)
 
-## Cria uma instância da classe Correcao_de_banco_de_dados
-#corretor = Correcao_de_banco_de_dados(
-#    host="localhost",
-#    usuario="developer",
-#    senha="Leo140707",
-#    banco_de_dados="RaspagemPuraDeDados",
-#    tabela="index_de_acoes"
-#)
-
-## Chama o método correcao_de_banco_de_dados na instância criada
-#errados = corretor.correcao_de_banco_de_dados()
-#print(errados)
+# Correção de erro no banco de dadosd e ações
+correcao = Correcao_de_banco_de_dados("localhost", "developer", "Leo140707", "RaspagemPuraDeDados", "index_de_acoes")
+correcao.correcao_de_banco_de_dados()
