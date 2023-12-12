@@ -52,27 +52,41 @@ class GerenciadorTabelaAcoes:
     def inserir_linha(self, resultados):
         self.conectar_banco_de_dados()
 
+        # Coletar lista de Id contida na tabela Index_de_acoes    
+        consulta_sql = "SELECT id FROM index_de_acoes"
+        self.cursor.execute(consulta_sql)
+        lista_de_id = [id[0] for id in self.cursor.fetchall()]
+
         for resultado in resultados:
             if len(resultado) == 2:
                 simbolo, nome_da_empresa = resultado
-                # Verifica se o símbolo já existe na tabela
-                self.cursor.execute("SELECT * FROM index_de_acoes WHERE simbolo = %s", (simbolo,))
-                result = self.cursor.fetchone()
 
-                if result is None:
-                    # Insere a linha se o símbolo não existe
-                    self.cursor.execute("""
-                        INSERT INTO index_de_acoes (simbolo, nome_da_empresa)
-                        VALUES (%s, %s)
-                    """, (simbolo, nome_da_empresa))
-                    self.conexao.commit()
-                    print(f"Linha {simbolo} inserida com sucesso.")
+                # Verificar se o símbolo já existe na tabela
+                consulta_sql = "SELECT id FROM index_de_acoes WHERE simbolo = %s"
+                self.cursor.execute(consulta_sql, (simbolo,))
+                existe_simbolo = self.cursor.fetchone()
+
+                if existe_simbolo:
+                    print(f"O símbolo {simbolo} já está contido na lista index_de_acoes.")
                 else:
-                    print(f"O símbolo {simbolo} já existe na tabela.")
+                    # Verificar se o símbolo já existe na coluna nome_da_empresa
+                    consulta_sql = "SELECT id FROM index_de_acoes WHERE nome_da_empresa = %s"
+                    self.cursor.execute(consulta_sql, (nome_da_empresa,))
+                    existe_empresa = self.cursor.fetchone()
+
+                    if existe_empresa:
+                        print(f"O símbolo {simbolo} já está contido na lista index_de_acoes, e na coluna errada. Observe o id: {existe_empresa[0]}")
+                    else:
+                        # Insere a linha se o símbolo não existe
+                        self.cursor.execute("""
+                            INSERT INTO index_de_acoes (simbolo, nome_da_empresa)
+                            VALUES (%s, %s)
+                        """, (simbolo, nome_da_empresa))
+                        self.conexao.commit()
+                        print(f"Linha {simbolo} inserida com sucesso.")
             else:
                 print(f"Resultado inválido: {resultado}")
 
+
         # Desconectar Banco de Dados
         self.fechar_conexao()
-
-    

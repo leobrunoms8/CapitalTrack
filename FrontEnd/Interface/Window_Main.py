@@ -56,6 +56,8 @@ class Ui_MainWindow(object):
         self.actionSair.setObjectName("actionSair")
         self.actionListas = QtWidgets.QAction(MainWindow)
         self.actionListas.setObjectName("actionListas")
+        self.actionDividendos = QtWidgets.QAction(MainWindow)
+        self.actionDividendos.setObjectName("actionDividendos")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addSeparator()
@@ -65,6 +67,7 @@ class Ui_MainWindow(object):
         self.menuEditar.addAction(self.actionExcluir)
         self.menuExibir.addAction(self.actionTela_Cheia)
         self.menuExibir.addAction(self.actionListas)
+        self.menuExibir.addAction(self.actionDividendos)
         self.menubar.addAction(self.menuArquivo.menuAction())
         self.menubar.addAction(self.menuEditar.menuAction())
         self.menubar.addAction(self.menuExibir.menuAction())
@@ -89,6 +92,7 @@ class Ui_MainWindow(object):
         self.actionTela_Cheia.setText(_translate("MainWindow", "Tela Cheia"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))
         self.actionListas.setText(_translate("MainWindow", "Listas"))
+        self.actionDividendos.setText(_translate("MainWindow", "Dividendos"))
 
 
 if __name__ == "__main__":

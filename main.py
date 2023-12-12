@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QTableWidgetItem
 from FrontEnd.Interface.Window_Main import Ui_MainWindow
 from FrontEnd.Interface.Window_Listas import Ui_Listas
+from FrontEnd.Interface.Window_Dividendos import Ui_Dividendos
 from Investing.RasparDados import RaspagemInvesting
 import mysql.connector
 
@@ -17,14 +18,13 @@ class MainWindow(QMainWindow):
         # Conecte os sinais dos itens de menu às funções correspondentes
         self.ui.actionTela_Cheia.triggered.connect(self.exibir_tela_cheia)
         self.ui.actionListas.triggered.connect(self.exibir_listas)
-
-        
+        self.ui.actionDividendos.triggered.connect(self.exibir_dividendos)
 
     def exibir_listas(self):
         # Exemplo de uso da classe e do método
-        #url = "https://br.investing.com/dividends-calendar/"
-        #raspagem = RaspagemInvesting(url)
-        #raspagem.realizar_raspagem()
+        # url = "https://br.investing.com/dividends-calendar/"
+        # raspagem = RaspagemInvesting(url)
+        # raspagem.realizar_raspagem()
 
         # Conecte ao banco de dados MySQL
         db = mysql.connector.connect(
@@ -76,9 +76,58 @@ class MainWindow(QMainWindow):
         # Implemente a lógica para exibir a tela cheia aqui
         pass
 
+    def exibir_dividendos(self):
+        # Exiba a janela de "Dividendos"
+        self.ui.dividendos_window = QDialog()
+        self.ui_dividendos = Ui_Dividendos()
+        self.ui_dividendos.setupUi(self.ui.dividendos_window)
+
+        # Conecte o clique do botão à função que executa o código desejado
+        self.ui_dividendos.pushButton.clicked.connect(self.consultar_dividendos)
+
+        self.ui.dividendos_window.show()
+
+    def consultar_dividendos(self):
+        # Obtenha a data escolhida na dateEdit
+        data_ex = self.ui_dividendos.dateEdit.date().toString("dd.MM.yyyy")
+        tabela_nome = f"`tabela_{data_ex}`"  # Adicione aspas invertidas ao redor do nome da tabela
+
+        # Conecte ao banco de dados MySQL
+        db = mysql.connector.connect(
+            host="localhost",
+            user="developer",
+            password="Leo140707",
+            database="RaspagemPuraDeDados"
+        )
+
+        cursor = db.cursor()
+
+        try:
+            # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+            cursor.execute(f"SELECT * FROM {tabela_nome}")
+
+            # Recupere os resultados
+            result = cursor.fetchall()
+
+            # Preencha a tabela na janela de "Dividendos"
+            self.ui_dividendos.tableWidget.setRowCount(len(result))
+            for row_index, row_data in enumerate(result):
+                for col_index, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.ui_dividendos.tableWidget.setItem(row_index, col_index, item)
+
+        except mysql.connector.Error as err:
+            # Handle the error (e.g., table not found)
+            print(f"Error: {err}")
+
+        finally:
+            # Feche a conexão com o banco de dados
+            db.close()
+
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())
-

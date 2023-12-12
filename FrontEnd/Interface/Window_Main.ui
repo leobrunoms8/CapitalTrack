@@ -70,6 +70,7 @@
     </property>
     <addaction name="actionTela_Cheia"/>
     <addaction name="actionListas"/>
+    <addaction name="actionDividendos"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuEditar"/>
@@ -114,6 +115,11 @@
   <action name="actionListas">
    <property name="text">
     <string>Listas</string>
+   </property>
+  </action>
+  <action name="actionDividendos">
+   <property name="text">
+    <string>Dividendos</string>
    </property>
   </action>
  </widget>

@@ -3,6 +3,7 @@ from .db_Investing_Dividendos.Coleta_Empresa_Na_Tabela_De_Raspagem import Coleta
 from .db_Investing_Dividendos.Correção_de_Banco_de_Dados import Correcao_de_banco_de_dados
 from .db_Investing_Dividendos.Gerenciador_Tabela_De_Acoes import GerenciadorTabelaAcoes
 from .db_Investing_Dividendos.Analise_Simbolos_Yfinance import Analise_De_Simbolos
+from .db_Investing_Dividendos.Separar_Por_Data_Ex import SeparadorPorDataEx
 
 class AnaliseSimbolosManager:
     def __init__(self, info_conexao):
@@ -17,6 +18,20 @@ class AnaliseSimbolosManager:
         print("Lista de Símbolos:")
         for simbolo in lista_simbolos:
             print(simbolo, " do tipo: ", type(simbolo))
+        
+        # Separar ações em tabelas por Data EX
+        # Configurações de conexão ao banco de dados
+        db_config = {
+            'host': 'localhost',
+            'user': 'developer',
+            'password': 'Leo140707',
+            'database': 'RaspagemPuraDeDados'
+        }
+
+        # Criar instância da classe e chamar o método separar_por_data_ex
+        separador = SeparadorPorDataEx(db_config)
+        separador.separar_por_data_ex()
+        separador.fechar_conexao()     
 
         # Cria uma instância da classe
         analise_simbolos = Analise_De_Simbolos(lista_simbolos)
