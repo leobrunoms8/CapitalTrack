@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Dividendos.ui'
+# Form implementation generated from reading ui file 'Window_Dividendos.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,9 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dividendos(object):
     def setupUi(self, Dividendos):
         Dividendos.setObjectName("Dividendos")
-        Dividendos.resize(677, 534)
-        self.tableWidget = QtWidgets.QTableWidget(Dividendos)
-        self.tableWidget.setGeometry(QtCore.QRect(0, 70, 671, 421))
+        Dividendos.resize(798, 627)
+        self.tabWidget = QtWidgets.QTabWidget(Dividendos)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 791, 621))
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.tableWidget = QtWidgets.QTableWidget(self.tab)
+        self.tableWidget.setGeometry(QtCore.QRect(-10, 90, 791, 501))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(6)
         self.tableWidget.setRowCount(0)
@@ -32,8 +37,8 @@ class Ui_Dividendos(object):
         self.tableWidget.setHorizontalHeaderItem(4, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(5, item)
-        self.groupBox = QtWidgets.QGroupBox(Dividendos)
-        self.groupBox.setGeometry(QtCore.QRect(10, 0, 211, 61))
+        self.groupBox = QtWidgets.QGroupBox(self.tab)
+        self.groupBox.setGeometry(QtCore.QRect(20, 20, 211, 61))
         self.groupBox.setObjectName("groupBox")
         self.dateEdit = QtWidgets.QDateEdit(self.groupBox)
         self.dateEdit.setGeometry(QtCore.QRect(10, 20, 81, 21))
@@ -41,10 +46,49 @@ class Ui_Dividendos(object):
         self.pushButton = QtWidgets.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(100, 20, 101, 21))
         self.pushButton.setObjectName("pushButton")
-        self.groupBox.raise_()
-        self.tableWidget.raise_()
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tabWidget_2 = QtWidgets.QTabWidget(self.tab_2)
+        self.tabWidget_2.setGeometry(QtCore.QRect(0, 0, 791, 601))
+        self.tabWidget_2.setObjectName("tabWidget_2")
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setObjectName("tab_3")
+        self.tabWidget_2.addTab(self.tab_3, "")
+        self.tab_4 = QtWidgets.QWidget()
+        self.tab_4.setObjectName("tab_4")
+        self.tableWidget_3 = QtWidgets.QTableWidget(self.tab_4)
+        self.tableWidget_3.setGeometry(QtCore.QRect(0, 0, 781, 571))
+        self.tableWidget_3.setObjectName("tableWidget_3")
+        self.tableWidget_3.setColumnCount(0)
+        self.tableWidget_3.setRowCount(0)
+        self.tabWidget_2.addTab(self.tab_4, "")
+        self.tab_5 = QtWidgets.QWidget()
+        self.tab_5.setObjectName("tab_5")
+        self.tableWidget_4 = QtWidgets.QTableWidget(self.tab_5)
+        self.tableWidget_4.setGeometry(QtCore.QRect(0, 0, 781, 571))
+        self.tableWidget_4.setObjectName("tableWidget_4")
+        self.tableWidget_4.setColumnCount(0)
+        self.tableWidget_4.setRowCount(0)
+        self.tabWidget_2.addTab(self.tab_5, "")
+        self.tab_6 = QtWidgets.QWidget()
+        self.tab_6.setObjectName("tab_6")
+        self.tableWidget_2 = QtWidgets.QTableWidget(self.tab_6)
+        self.tableWidget_2.setGeometry(QtCore.QRect(0, 0, 781, 571))
+        self.tableWidget_2.setObjectName("tableWidget_2")
+        self.tableWidget_2.setColumnCount(0)
+        self.tableWidget_2.setRowCount(0)
+        self.tableWidget_5 = QtWidgets.QTableWidget(self.tab_6)
+        self.tableWidget_5.setGeometry(QtCore.QRect(0, 0, 781, 571))
+        self.tableWidget_5.setObjectName("tableWidget_5")
+        self.tableWidget_5.setColumnCount(0)
+        self.tableWidget_5.setRowCount(0)
+        self.tabWidget_2.addTab(self.tab_6, "")
+        self.tabWidget.addTab(self.tab_2, "")
 
         self.retranslateUi(Dividendos)
+        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(Dividendos)
 
     def retranslateUi(self, Dividendos):
@@ -64,6 +108,12 @@ class Ui_Dividendos(object):
         item.setText(_translate("Dividendos", "Data de Pagamento"))
         self.groupBox.setTitle(_translate("Dividendos", "Data Ex"))
         self.pushButton.setText(_translate("Dividendos", "Consultar"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dividendos", "Consulta Por Data"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), _translate("Dividendos", "Hoje"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_4), _translate("Dividendos", "Amanhã"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_5), _translate("Dividendos", "Nesta Semana"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_6), _translate("Dividendos", "Proxima Semana"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dividendos", "Consulta Por Relação Dividendo/Valor da Ação"))
 
 
 if __name__ == "__main__":

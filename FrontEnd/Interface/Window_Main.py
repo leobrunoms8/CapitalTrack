@@ -14,18 +14,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(800, 626)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 791, 201))
-        self.tabWidget.setObjectName("tabWidget")
-        self.tab = QtWidgets.QWidget()
-        self.tab.setObjectName("tab")
-        self.tabWidget.addTab(self.tab, "")
-        self.tab_2 = QtWidgets.QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -73,14 +64,11 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuExibir.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Carteira"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
         self.menuEditar.setTitle(_translate("MainWindow", "Editar"))
         self.menuExibir.setTitle(_translate("MainWindow", "Exibir"))
