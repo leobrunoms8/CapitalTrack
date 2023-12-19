@@ -116,7 +116,7 @@
        <x>0</x>
        <y>0</y>
        <width>791</width>
-       <height>601</height>
+       <height>471</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -126,6 +126,59 @@
       <attribute name="title">
        <string>Hoje</string>
       </attribute>
+      <widget class="QTableWidget" name="tableWidget_6">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>791</width>
+         <height>381</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>Id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Símbolo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Nome da Empresa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data Ex</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Valor do Dividendo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data de Pagamento</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cosultar</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
@@ -137,8 +190,51 @@
          <x>0</x>
          <y>0</y>
          <width>781</width>
-         <height>571</height>
+         <height>381</height>
         </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>Id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Símbolo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Nome da Empresa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data Ex</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Valor do Dividendo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data de Pagamento</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cosultar</string>
        </property>
       </widget>
      </widget>
@@ -152,8 +248,51 @@
          <x>0</x>
          <y>0</y>
          <width>781</width>
-         <height>571</height>
+         <height>381</height>
         </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>Id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Símbolo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Nome da Empresa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data Ex</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Valor do Dividendo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data de Pagamento</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cosultar</string>
        </property>
       </widget>
      </widget>
@@ -161,24 +300,57 @@
       <attribute name="title">
        <string>Proxima Semana</string>
       </attribute>
-      <widget class="QTableWidget" name="tableWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>781</width>
-         <height>571</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QTableWidget" name="tableWidget_5">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
          <width>781</width>
-         <height>571</height>
+         <height>381</height>
         </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>Id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Símbolo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Nome da Empresa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data Ex</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Valor do Dividendo</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Data de Pagamento</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>400</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cosultar</string>
        </property>
       </widget>
      </widget>

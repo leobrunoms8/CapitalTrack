@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -25,6 +26,13 @@ class InvestingScraper:
 
         # Clicar no link "Amanhã"
         link_amanha.click()
+
+        # Aguardar 5 segundos para a página ser atualizada
+        time.sleep(5)
+
+        # Realizar a rolagem para o final da página
+        body = self.driver.find_element(By.TAG_NAME, 'body')
+        body.send_keys(Keys.END)  # Isso simula a pressão da tecla "End"
 
         # Aguardar 5 segundos para a página ser atualizada
         time.sleep(5)

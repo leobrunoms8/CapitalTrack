@@ -3,6 +3,7 @@ from .db_Investing_Dividendos.Info_Data import InfoList
 from .db_Investing_Dividendos.Raspagem_Pura_De_Dados import criar_banco_de_dados
 from .db_Investing_Dividendos.Criar_Tabela_Raspagem import criar_tabela
 from .db_Investing_Dividendos.Inserir_Dados_Raspagem import InsercaoDados
+from .db_Investing_Dividendos.Apagar_Tabela_Raspagem import ApagarTabela
 from .Conferencia_De_Dados_De_Entrada import AnaliseSimbolosManager
 
 class RaspagemInvesting:
@@ -11,6 +12,10 @@ class RaspagemInvesting:
         self.dados = None
 
     def realizar_raspagem(self):
+        # Dropar Lista raspagem 
+        self.apagar = ApagarTabela()
+        self.apagar.apagar_tabela()
+
         # Chamar o método scrape_data para obter a lista de dados
         self.dados = self.investing_scraper.scrape_data()
 
