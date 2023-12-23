@@ -1,22 +1,19 @@
-from PyQt5.QtCore import QDate
-from datetime import datetime
+def remover_segunda_virgula(s):
+    # Encontrar a posição da primeira vírgula
+    primeira_virgula = s.find(',')
+    
+    # Encontrar a posição da segunda vírgula a partir da posição da primeira vírgula
+    segunda_virgula = s.find(',', primeira_virgula + 1)
+    
+    # Se encontrar a segunda vírgula, criar uma nova string excluindo-a
+    if segunda_virgula != -1:
+        nova_string = s[:segunda_virgula] + s[segunda_virgula+1:]
+        return nova_string
+    else:
+        # Se não houver segunda vírgula, retornar a string original
+        return s
 
-# Suponha que data_inicial e data_final sejam strings no formato "dd.MM.yyyy"
-data_inicial = "04.12.2023"
-data_final = "28.12.2023"
-
-# Converter as strings para objetos QDate
-qdate_inicial = QDate.fromString(data_inicial, "dd.MM.yyyy")
-qdate_final = QDate.fromString(data_final, "dd.MM.yyyy")
-
-# Obter as datas como objetos datetime
-data_inicial_datetime = datetime(qdate_inicial.year(), qdate_inicial.month(), qdate_inicial.day())
-data_final_datetime = datetime(qdate_final.year(), qdate_final.month(), qdate_final.day())
-
-# Converter as datas para o formato "MM.dd.yyyy"
-data_inicial_formatada = data_inicial_datetime.strftime("%m.%d.%Y")
-data_final_formatada = data_final_datetime.strftime("%m.%d.%Y")
-
-# Imprimir os resultados
-print("Data Inicial formatada:", data_inicial_formatada)
-print("Data Final formatada:", data_final_formatada)
+# Exemplo de uso
+minha_string = "1,2,3,4,5"
+nova_string = remover_segunda_virgula(minha_string)
+print(nova_string)
