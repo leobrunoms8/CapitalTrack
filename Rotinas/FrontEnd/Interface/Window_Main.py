@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
         self.actionAdicionar.setText(_translate("MainWindow", "Adicionar..."))
         self.actionEditar.setText(_translate("MainWindow", "Editar..."))
         self.actionExcluir.setText(_translate("MainWindow", "Excluir..."))
-        self.actionTela_Cheia.setText(_translate("MainWindow", "Tela Cheia"))
+        self.actionTela_Cheia.setText(_translate("MainWindow", "Análises"))
         self.actionSair.setText(_translate("MainWindow", "Sair"))
         self.actionListas.setText(_translate("MainWindow", "Listas"))
         self.actionDividendos.setText(_translate("MainWindow", "Dividendos"))

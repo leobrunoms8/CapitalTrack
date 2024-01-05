@@ -163,7 +163,7 @@
   </action>
   <action name="actionTela_Cheia">
    <property name="text">
-    <string>Tela Cheia</string>
+    <string>Análises</string>
    </property>
   </action>
   <action name="actionSair">

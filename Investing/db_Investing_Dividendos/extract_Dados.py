@@ -21,7 +21,7 @@ class InvestingScraper:
         # Navegar para a página
         self.driver.get(self.url)
 
-        # Localizar o link "Amanhã" usando Selenium
+        # Localizar o link recebido usando Selenium
         link_amanha = self.driver.find_element(By.ID, "timeFrame_nextWeek")
 
         # Clicar no link "Amanhã"

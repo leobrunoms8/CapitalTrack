@@ -1,19 +1,16 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QTableWidgetItem, QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtCore import QDate
 from PyQt5 import QtWidgets
 from Rotinas.FrontEnd.Interface.Window_Main import Ui_MainWindow
-from Rotinas.FrontEnd.Interface.Window_Listas import Ui_Listas
 from Rotinas.Window_Exibir_Dividendos import Window_exibir_Dividendos
-from Investing.RasparDados import RaspagemInvesting
+from Rotinas.Window_Exibir_Listas import Window_exibir_listas
 from datetime import datetime
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from forex_python.converter import CurrencyRates
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pymysql
-import yfinance as yf
 import mysql.connector
 import sys
 
@@ -35,67 +32,20 @@ class MainWindow(QMainWindow):
 
         # Mantenha uma instância da classe Window_exibir_Dividendos como um atributo
         self.dividendos_window_instance = Window_exibir_Dividendos(self.ui)
+        self.exibir_listas_instance = Window_exibir_listas(self.ui)
 
         
 
     def exibir_listas(self):
-        # Exemplo de uso da classe e do método
-        # url = "https://br.investing.com/dividends-calendar/"
-        # raspagem = RaspagemInvesting(url)
-        # raspagem.realizar_raspagem()
-
-        # Conecte ao banco de dados MySQL
-        db = mysql.connector.connect(
-            host="localhost",
-            user="developer",
-            password="Leo140707",
-            database="RaspagemPuraDeDados"
-        )
-
-        cursor = db.cursor()
-
-        # Execute uma consulta para obter dados da tabela "sua_tabela"
-        cursor.execute("SELECT * FROM raspagem")
-
-        # Recupere os resultados
-        result = cursor.fetchall()
-
-        # Feche a conexão com o banco de dados
-        db.close()
-
-        # Exiba os resultados na QTableWidget
-        self.ui.listas_window = QDialog()
-        self.ui_listas = Ui_Listas()
-        self.ui_listas.setupUi(self.ui.listas_window)
-
-        # Limpe as tabelas existentes
-        self.ui_listas.tableWidget.setRowCount(0)
-        self.ui_listas.tableWidget_2.setRowCount(0)
-        self.ui_listas.tableWidget_3.setRowCount(0)
-
-        # Preencha a primeira tabela (Raspagem)
-        self.ui_listas.tableWidget.setRowCount(len(result))
-        for row_index, row_data in enumerate(result):
-            for col_index, col_data in enumerate(row_data):
-                item = QTableWidgetItem(str(col_data))
-                self.ui_listas.tableWidget.setItem(row_index, col_index, item)
-
-        self.ui.listas_window.show()
-        # Conecte o clique do botão à função que executa o código desejado
-        self.ui_listas.pushButton_2.clicked.connect(self.executar_raspagem)
-
-    def executar_raspagem(self):
-        # Executar ao clicar no pushButton_2
-        url = "https://br.investing.com/dividends-calendar/"
-        raspagem = RaspagemInvesting(url)
-        raspagem.realizar_raspagem()
+       # Chamar o método exibir_listas na instância da classe
+       self.exibir_listas_instance.exibir_listas()
 
     def exibir_tela_cheia(self):
         # Implemente a lógica para exibir a tela cheia aqui
         pass
 
     def exibir_dividendos(self):
-        # Chame o método exibir_dividendos na instância da classe
+        # Chamar o método exibir_dividendos na instância da classe
         self.dividendos_window_instance.exibir_dividendos()
 
     def exibir_grafico(self):
