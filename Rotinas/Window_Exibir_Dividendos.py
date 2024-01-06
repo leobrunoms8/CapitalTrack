@@ -75,7 +75,7 @@ class Window_exibir_Dividendos(QDialog):
             hoje = datetime.now()
             dia_semana = hoje.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
 
-            if dia_semana == 4 or dia_semana == 5:  # 4 é sexta, 5 é sábado
+            if dia_semana == 5 or dia_semana == 6:  # 5 é sábado, 6 é domingo
                 # Mostra uma mensagem informando que é fim de semana
                 QMessageBox.warning(self, "Aviso", "Hoje é fim de semana. Não há consulta de dividendos disponível.")
                 return
@@ -290,6 +290,7 @@ class Window_exibir_Dividendos(QDialog):
         finally:
             # Feche a conexão com o banco de dados
             db.close()
+    
     def switch_case_numero_dia_da_semana0(self, argument):
         switch_dict = {
             0: 7,
