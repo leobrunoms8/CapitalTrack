@@ -2,3 +2,6 @@
         url = "https://br.investing.com/dividends-calendar/"
         raspagem = RaspagemInvesting(url)
         raspagem.realizar_raspagem()
+
+# Codigo da classe main
+

@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem, QTableWidgetItem, QMessageBox
 from datetime import datetime
-from Investing.RasparDados import RaspagemInvesting
 
 from Rotinas.FrontEnd.Interface.Window_Listas import Ui_Listas
 from Rotinas.Metodos.Raspagem_e_Separacao import Raspagem_e_Separacao_Investing

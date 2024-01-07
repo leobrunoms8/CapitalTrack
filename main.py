@@ -1,19 +1,12 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import QDate
-from PyQt5 import QtWidgets
+
 from Rotinas.FrontEnd.Interface.Window_Main import Ui_MainWindow
 from Rotinas.Window_Exibir_Dividendos import Window_exibir_Dividendos
 from Rotinas.Window_Exibir_Listas import Window_exibir_listas
-from datetime import datetime
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from Rotinas.Window_Exibir_Graficos import Window_exibir_Graficos
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import pymysql
-import mysql.connector
+
 import sys
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -28,11 +21,12 @@ class MainWindow(QMainWindow):
         self.ui.actionTela_Cheia.triggered.connect(self.exibir_tela_cheia)
         self.ui.actionListas.triggered.connect(self.exibir_listas)
         self.ui.actionDividendos.triggered.connect(self.exibir_dividendos)
-        self.ui.pushButton.clicked.connect(self.exibir_grafico) 
+        self.ui.actionGr_ficos.triggered.connect(self.exibir_graficos)
 
         # Mantenha uma instância da classe Window_exibir_Dividendos como um atributo
         self.dividendos_window_instance = Window_exibir_Dividendos(self.ui)
         self.exibir_listas_instance = Window_exibir_listas(self.ui)
+        self.exibir_graficos_instance = Window_exibir_Graficos(self.ui)
 
         
 
@@ -47,114 +41,9 @@ class MainWindow(QMainWindow):
     def exibir_dividendos(self):
         # Chamar o método exibir_dividendos na instância da classe
         self.dividendos_window_instance.exibir_dividendos()
-
-    def exibir_grafico(self):
-        try:
-            # Conectar ao banco de dados MySQL
-            with pymysql.connect(host='localhost', user='developer', password='Leo140707', database='raspagempuradedados') as conexao:
-                cursor = conexao.cursor()
-
-                # Obtenha as datas escolhidas nos controles dateEdit e dateEdit_2
-                data_inicial = self.ui.dateEdit.date().toString("dd.MM.yyyy")
-                data_final = self.ui.dateEdit_2.date().toString("dd.MM.yyyy")
-
-                # Converter as strings para objetos QDate
-                qdate_inicial = QDate.fromString(data_inicial, "dd.MM.yyyy")
-                qdate_final = QDate.fromString(data_final, "dd.MM.yyyy")
-
-                # Obter as datas como objetos datetime
-                data_inicial_datetime = datetime(qdate_inicial.year(), qdate_inicial.month(), qdate_inicial.day())
-                data_final_datetime = datetime(qdate_final.year(), qdate_final.month(), qdate_final.day())
-
-                # Converter as datas para o formato "MM.dd.yyyy"
-                data_inicial_formatada = data_inicial_datetime.strftime("%m.%d.%Y")
-                data_final_formatada = data_final_datetime.strftime("%m.%d.%Y")
-
-                # Crie uma lista de datas entre data_inicial e data_final
-                datas_consulta = pd.date_range(data_inicial_formatada, data_final_formatada, freq='D').strftime('%d.%m.%Y').tolist()
-
-                # Inicializar lista para armazenar os resultados
-                dados_resultado = []
-
-                for data_ex in datas_consulta:
-                    try:
-                        # Verificar se a tabela existe antes de executar a consulta SQL
-                        tabela_existe = self.verificar_tabela_existente(cursor, data_ex)
-
-                        if tabela_existe:
-                            # Consulta SQL para obter os dados da tabela para a data escolhida
-                            consulta_sql = f"SELECT data_ex, SUM(CAST(REPLACE(valor_dividendo, ',', '.') AS DECIMAL(10, 4))) as soma_valor_dividendo " \
-                                        f"FROM `tabela_{data_ex}` GROUP BY data_ex"
-
-                            # Executar a consulta SQL
-                            cursor.execute(consulta_sql)
-
-                            # Obter os resultados e adicionar à lista
-                            resultados = cursor.fetchall()
-
-                            if not resultados:
-                                # Adicionar algum tratamento ou mensagem para indicar que não há dados para a tabela
-                                print(f"Nenhum dado encontrado para a tabela_{data_ex}")
-                                continue
-
-                            for resultado in resultados:
-                                dados_resultado.append({'data': resultado[0], 'soma_valor_dividendo': resultado[1]})
-
-                    except mysql.connector.Error as err:
-                        # Handle the error (e.g., table not found)
-                        print(f"Error: {err}")
-                        continue
-
-                # Criar DataFrame a partir da lista
-                resultado_df = pd.DataFrame(dados_resultado)
-
-                # Substituir '--' por NaN na coluna 'data'
-                resultado_df['data'] = resultado_df['data'].replace('--', np.nan)
-
-                # Converter a coluna 'data' para o tipo datetime, ignorando NaN
-                resultado_df['data'] = pd.to_datetime(resultado_df['data'], format='%d.%m.%Y', errors='coerce')
-
-                # Classificar DataFrame pela coluna 'data'
-                resultado_df = resultado_df.sort_values(by='data')
-
-                # Criar e configurar o gráfico
-                fig, ax = plt.subplots(figsize=(8, 5))
-                ax.bar(resultado_df['data'], resultado_df['soma_valor_dividendo'])
-                ax.set_xlabel('Data Ex')
-                ax.set_ylabel('Soma do Valor de Dividendo')
-                ax.set_title('Soma do Valor de Dividendo por Data EX')
-                plt.xticks(rotation=45)
-
-                # Criar uma instância de FigureCanvasQTAgg
-                canvas = FigureCanvas(fig)
-
-                # Verificar se a graphicsView tem um layout
-                if self.ui.graphicsView.layout() is None:
-                    # Se não houver layout, adicionar um QVBoxLayout
-                    layout = QtWidgets.QVBoxLayout(self.ui.graphicsView)
-                    layout.setContentsMargins(0, 0, 0, 0)
-                    layout.addWidget(canvas)
-                else:
-                    # Se já houver um layout, substituir o widget existente
-                    old_widget = self.ui.graphicsView.layout().itemAt(0).widget()
-                    self.ui.graphicsView.layout().replaceWidget(old_widget, canvas)
-                    old_widget.close()
-
-                canvas.draw()
-
-        except Exception as e:
-            # Tratar exceções gerais
-            print(f"Erro: {e}")
-
-    def verificar_tabela_existente(self, cursor, data_ex):
-        # Verificar se a tabela existe no banco de dados
-        try:
-            cursor.execute(f"SHOW TABLES LIKE 'tabela_{data_ex}'")
-            return cursor.fetchone() is not None
-        except mysql.connector.Error as err:
-            # Handle the error
-            print(f"Error: {err}")
-            return False
+    
+    def exibir_graficos(self):
+        self.exibir_graficos_instance.exibir_grafico()
             
 if __name__ == "__main__":
     app = QApplication(sys.argv)
