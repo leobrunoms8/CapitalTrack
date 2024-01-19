@@ -2,10 +2,8 @@ from matplotlib.backend_bases import FigureCanvasBase
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from PyQt5.QtCore import QDate
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog
 from sqlalchemy import create_engine
 
 from .FrontEnd.Interface.Window_Graficos import Ui_Window_Graficos
@@ -22,7 +20,7 @@ class Window_exibir_Graficos(QDialog):
 
     def exibir_grafico(self):
         self.show()
-        
+
         try:
             engine = create_engine("mysql+pymysql://developer:Leo140707@localhost/raspagempuradedados")
 

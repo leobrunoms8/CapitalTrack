@@ -5,29 +5,32 @@ class ApagarTabela:
        self
 
     def apagar_tabela(self):
-        # Estabelece a conexão com o servidor MySQL e seleciona o banco de dados "Stocks"
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="developer",
-            password="Leo140707",
-            database="RaspagemPuraDeDados"
-        )
+        try:  # Estabelece a conexão com o servidor MySQL e seleciona o banco de dados "Stocks"
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="developer",
+                password="Leo140707",
+                database="RaspagemPuraDeDados"
+            )
 
-        # Criar um cursor para executar consultas SQL
-        cursor = conn.cursor()
+            # Criar um cursor para executar consultas SQL
+            cursor = conn.cursor()
 
-        # Substitua "sua_tabela" pelo nome da tabela que você deseja apagar
-        tabela_a_apagar = 'raspagem'
+            # Substitua "sua_tabela" pelo nome da tabela que você deseja apagar
+            tabela_a_apagar = 'raspagem'
 
-        # Comando SQL para apagar a tabela
-        query = f"DROP TABLE {tabela_a_apagar}"
+            # Comando SQL para apagar a tabela
+            query = f"DROP TABLE {tabela_a_apagar}"
 
-        # Executar o comando SQL
-        cursor.execute(query)
+            # Executar o comando SQL
+            cursor.execute(query)
 
-        # Commit para salvar as alterações no banco de dados
-        conn.commit()
+            # Commit para salvar as alterações no banco de dados
+            conn.commit()
 
-        # Fechar o cursor e a conexão
-        cursor.close()
-        conn.close()
+        except Exception as err:
+            print(err)
+        finally:
+            # Fechar o cursor e a conexão
+            cursor.close()
+            conn.close()

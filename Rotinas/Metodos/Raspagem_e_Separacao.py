@@ -16,16 +16,17 @@ class Raspagem_e_Separacao_Investing:
         self.apagar = ApagarTabela()
         self.apagar.apagar_tabela()
 
+        # Criar a tabela raspagem
+        self.criar =Criar_Tabela()
+        self.criar.criar_tabela()
+
         # Chamar o método scrape_data para obter a lista de dados
         self.dados = self.investing_scraper.scrape_data()
 
         # Imprimir dados obtidos no Investing.com no terminal
         for linha in self.dados:
             print("\t".join(linha))
-
-        # Criar a tabela raspagem
-        self.criar =Criar_Tabela()
-        self.criar.criar_tabela()
+       
 
         # Chame a função para inserir os dados
         insercao = InsercaoDados(self.dados)
