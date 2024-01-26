@@ -167,6 +167,39 @@ class Testagem_Yfinance:
             print(frequencia_dividendos)
 
             frequencia_dividendos_tratada = self.extrair_frequencia_dividendos(frequencia_dividendos)
+
+            # Converter a string para um DataFrame do pandas
+            dados_df = pd.read_csv(StringIO(frequencia_dividendos), delim_whitespace=True, names=['Date', 'Value'], index_col='Date')
+
+            # Converter o índice para o tipo datetime
+            dados_df.index = pd.to_datetime(dados_df.index)
+
+            # Calcular a diferença entre as datas
+            diferencas = dados_df.index.to_series().diff()
+
+            # Identificar a moda das diferenças (pode haver múltiplos valores se a frequência não for constante)
+            frequencia_moda = diferencas.mode().iloc[0]
+
+            # Imprimir a moda das diferenças
+            print(f'Moda das diferenças entre as datas: {frequencia_moda}')
+
+            # Verificar se a frequência é mensal, trimestral, anual ou sem frequência definida
+            if frequencia_moda.days <= 40 or frequencia_moda.days >= 20:
+                print('A frequência é mensal.')
+            elif frequencia_moda.days <= 100 or frequencia_moda.days >= 80:
+                print('A frequência é trimestral.')
+            elif frequencia_moda.days <= 400 or frequencia_moda.days >= 350:
+                print('A frequência é anual.')
+            else:
+                print('A frequência não está definida ou é irregular.')
+                
+                # Identificar os meses mais comuns na lista de datas
+                meses_mais_comuns = dados_df.index.month.value_counts().index.tolist()
+                print(f'Meses mais comuns na lista: {meses_mais_comuns}')
+
+
+
+
             
             return frequencia_dividendos_tratada
 
