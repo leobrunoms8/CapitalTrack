@@ -33,13 +33,12 @@ class Testagem_Yfinance:
             simbolo_p_analisar_hoje_formatados = [simbolo[0].replace('(', '').replace(')', '').replace(',', '') for simbolo in simbolo_p_analisar_hoje]
 
             simbolos_encontrados = []
-            simbolos_nao_encontrados = []
 
             for simbolo in simbolo_p_analisar_hoje_formatados:
                 try:
                     # Imprime qual Siímbolo está sendo Analisado no momento
 
-                    # print("Analisando: '",simbolo,"'")
+                    print("Analisando: '",simbolo,"'")
 
                     # Tenta criar um objeto Ticker para o símbolo
                     acao = yf.Ticker(simbolo)
@@ -50,6 +49,7 @@ class Testagem_Yfinance:
                     # Obtém o preço de fechamento mais recente
                     ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
                     # print(ultimo_preco_fechamento)
+                    print(ultimo_preco_fechamento)
 
                     # Adiciona o símbolo aos símbolos encontrados
                     simbolos_encontrados.append(simbolo)
@@ -84,15 +84,11 @@ class Testagem_Yfinance:
             # Remover caracteres '(', ')', e ',' de cada string
             simbolo_p_analisar_hoje_formatados = [simbolo[0].replace('(', '').replace(')', '').replace(',', '') for simbolo in simbolo_p_analisar_hoje]
 
-            simbolos_encontrados = []
-            simbolos_nao_encontrados = []
+            simbolos_nao_encontrados_primeira_tentativa = []
+            simbolos_nao_encontrados_segunda_tentativa = []
 
             for simbolo in simbolo_p_analisar_hoje_formatados:
                 try:
-                    # Imprime qual Siímbolo está sendo Analisado no momento
-
-                    print("Analisando: '",simbolo,"'")
-
                     # Tenta criar um objeto Ticker para o símbolo
                     acao = yf.Ticker(simbolo)
 
@@ -101,22 +97,36 @@ class Testagem_Yfinance:
 
                     # Obtém o preço de fechamento mais recente
                     ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
-                    print(ultimo_preco_fechamento)
-
-                    # Adiciona o símbolo aos símbolos encontrados
-                    simbolos_encontrados.append(simbolo)
                     
                 except Exception as e:
+                        # Caso não encontre em uma primeira tentativa é incluido na lista de não encontrados
+                        simbolos_nao_encontrados_primeira_tentativa.append(simbolo)
+                        continue
+            
+            for simbolo in simbolos_nao_encontrados_primeira_tentativa:
+                    try:
+                        # Imprime qual Siímbolo está sendo Analisado no momento
+
+                        print("Analisando: '",simbolo,"'")
+
+                        # Tenta criar um objeto Ticker para o símbolo
+                        acao = yf.Ticker(simbolo + '.SA')
+
+                        # Obtém os dados históricos mais recentes (último dia)
+                        dados_historicos = acao.history(period='1d')
+
+                        # Obtém o preço de fechamento mais recente
+                        ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
+                        print(ultimo_preco_fechamento)
+                    except Exception as e:
                         # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
                         print(f"Erro ao consultar simbolo {simbolo}: {e}")
-                        simbolos_nao_encontrados.append(simbolo)
+                        simbolos_nao_encontrados_segunda_tentativa.append(simbolo)
+                        simbolos_nao_encontrados_primeira_tentativa.remove(simbolo)
                         continue
+
         finally:
-            print('Símbolos Encontrados')
-            print(simbolos_encontrados)
-            print('Símbolos não Encotrados')
-            print(simbolos_nao_encontrados)
-            return simbolos_nao_encontrados  
+            return simbolos_nao_encontrados_primeira_tentativa  
     
     def testagem_preco(self, simbolo):
         try:
@@ -184,11 +194,11 @@ class Testagem_Yfinance:
             print(f'Moda das diferenças entre as datas: {frequencia_moda}')
 
             # Verificar se a frequência é mensal, trimestral, anual ou sem frequência definida
-            if frequencia_moda.days <= 40 or frequencia_moda.days >= 20:
+            if 20 <= frequencia_moda.days <= 40:
                 print('A frequência é mensal.')
-            elif frequencia_moda.days <= 100 or frequencia_moda.days >= 80:
+            elif 80 <= frequencia_moda.days <= 100:
                 print('A frequência é trimestral.')
-            elif frequencia_moda.days <= 400 or frequencia_moda.days >= 350:
+            elif 350 <= frequencia_moda.days <= 400:
                 print('A frequência é anual.')
             else:
                 print('A frequência não está definida ou é irregular.')
@@ -246,3 +256,48 @@ class Testagem_Yfinance:
             # Se ocorrer um erro, exibe o erro e continua
             print(f"Erro ao extrair frequência de dividendos: {e}")
             return None
+    
+    def extrair_relacao_dividendo_valor_da_acao(self, simbolo, data_ex, valor_da_acao):
+        try:
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host="localhost",
+                user="developer",
+                password="Leo140707",
+                database="RaspagemPuraDeDados"
+            )
+
+            cursor = db.cursor()
+
+            # Configura o nome da tabela
+            tabela = 'tabela_' + data_ex
+            print(tabela)
+            print(simbolo)
+
+            # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+            consulta_sql = """
+                SELECT
+                    valor_dividendo
+                FROM
+                    %s
+                WHERE
+                    simbolo = %s
+            """
+            cursor.execute(consulta_sql, (tabela, simbolo,))
+
+            dividendo = cursor.fetchall()
+
+            # Verifica se há resultados
+            if dividendo:
+                relacao_dividendo_valor_da_acao = dividendo[0][0] / valor_da_acao
+            else:
+                relacao_dividendo_valor_da_acao = None
+
+        except Exception as e:
+            print(f"Erro ao consultar simbolo {simbolo}: {e}")
+            relacao_dividendo_valor_da_acao = None
+
+        finally:
+            cursor.close()
+            db.close()
+            return relacao_dividendo_valor_da_acao

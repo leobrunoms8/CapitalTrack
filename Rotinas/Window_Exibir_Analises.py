@@ -39,17 +39,16 @@ class Window_exibir_Analises(QDialog):
                 QMessageBox.warning(self, "Aviso", "Hoje é fim de semana. Não há consulta de dividendos disponível.")
                 return
             
-            # Define o dia de hoje
-            tabela_nome = f"`tabela_{data_ex}`"
-
             # Método para coletar dados da tabela de dividendos do dia
 
             self.testagem = Testagem_Yfinance()
             simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
-            #simbolos_nao_encontrados = self.testagem.testagem_por_data_nao_encontrados(data_ex)
+            simbolos_nao_encontrados = self.testagem.testagem_por_data_nao_encontrados(data_ex)
 
             print('Símbolos Encontrados')
             print(simbolos_encontrados)
+            print('Símbolos não Encontrados')
+            print(simbolos_nao_encontrados)
 
 
             # -------------- Dropar tabela racunho ----------
@@ -84,19 +83,37 @@ class Window_exibir_Analises(QDialog):
 
                 valor_da_acao = self.testagem.testagem_preco(simbolo)
                 print(valor_da_acao)
+            # Análise frequancia de dividendos da empresa
+                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
+                print(frequencia_da_acao)
+            # Análise de moeda da ação
+                moeda = self.testagem.testagem_moeda_da_acao(simbolo)
+                print(moeda)
+            # Análise Relação Dividendo por Valor da Ação
+                #relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(simbolo, data_ex, valor_da_acao)
+                #print(relacao)
+
+            # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
+
+            # Análise de preço da ação encontrada
+
+            for simbolo in simbolos_nao_encontrados:
+
+                valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
+                print(valor_da_acao)
             
             # Análise frequancia de dividendos da empresa
             
-            for simbolo in simbolos_encontrados:
+            for simbolo in simbolos_nao_encontrados:
 
-                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
+                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
                 print(frequencia_da_acao)
 
             # Análise de moeda da ação
                 
-            for simbolo in simbolos_encontrados:
+            for simbolo in simbolos_nao_encontrados:
 
-                moeda = self.testagem.testagem_moeda_da_acao(simbolo)
+                moeda = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
                 print(moeda)
            
     def analisar_por_acao(self):
