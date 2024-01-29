@@ -1,13 +1,12 @@
-from PyQt5.QtWidgets import QDialog, QTableWidgetItem, QTableWidgetItem, QMessageBox
-from forex_python.converter import CurrencyRates
-from datetime import datetime, timedelta
-import yfinance as yf
+from PyQt5.QtWidgets import QDialog, QMessageBox
+from datetime import datetime
 import mysql.connector
 
 from .FrontEnd.Interface.Window_Analises import Ui_Analises
 from .Metodos.Testagem_Yfinance_por_data import Testagem_Yfinance
 from .Metodos.Apagar_Tabela_Generico import ApagarTabelaGenerico
 from .Metodos.Criar_Tabela_Generico import CriarTabelaGenerico
+from .Metodos.Atualizar_Tabelas import Atualizar_Tabelas
 
 class Window_exibir_Analises(QDialog):
     def __init__(self, ui_mainwindow):
@@ -33,6 +32,8 @@ class Window_exibir_Analises(QDialog):
             data_formato = "%d.%m.%Y"
             data_objeto = datetime.strptime(data_ex, data_formato)
             dia_semana = data_objeto.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
+            # Define o dia de hoje
+            tabela = 'tabela_' + data_ex
 
             if dia_semana == 5 or dia_semana == 6:  # 5 é sábado, 6 é domingo
                 # Mostra uma mensagem informando que é fim de semana
@@ -77,6 +78,8 @@ class Window_exibir_Analises(QDialog):
 
             # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
 
+            self.atualizacao = Atualizar_Tabelas()
+
             # Análise de preço da ação encontrada
 
             for simbolo in simbolos_encontrados:
@@ -86,9 +89,11 @@ class Window_exibir_Analises(QDialog):
             # Análise frequancia de dividendos da empresa
                 frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
                 print(frequencia_da_acao)
+                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao)
             # Análise de moeda da ação
                 moeda = self.testagem.testagem_moeda_da_acao(simbolo)
                 print(moeda)
+                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda)
             # Análise Relação Dividendo por Valor da Ação
                 #relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(simbolo, data_ex, valor_da_acao)
                 #print(relacao)
@@ -104,17 +109,17 @@ class Window_exibir_Analises(QDialog):
             
             # Análise frequancia de dividendos da empresa
             
-            for simbolo in simbolos_nao_encontrados:
-
                 frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
                 print(frequencia_da_acao)
 
             # Análise de moeda da ação
                 
-            for simbolo in simbolos_nao_encontrados:
-
                 moeda = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
                 print(moeda)
+
+            # -----------------   Atualizar banco de dados com as informações analisadas -------------   
+                
+
            
     def analisar_por_acao(self):
             

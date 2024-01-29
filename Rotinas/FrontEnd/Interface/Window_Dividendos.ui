@@ -339,6 +339,16 @@
          <string>Data de Pagamento</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Frequencia</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Moeda</string>
+        </property>
+       </column>
       </widget>
       <widget class="QPushButton" name="pushButton_5">
        <property name="geometry">

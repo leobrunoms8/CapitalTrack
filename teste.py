@@ -1,15 +1,17 @@
-import yfinance as yf
-
-# Símbolo da ação da Vale
-simbolo = "VALE3.SA"
-
-# Criar um objeto Ticker para a ação da Vale
-acao_vale = yf.Ticker(simbolo)
-
-# Obter os dados históricos mais recentes (último dia)
-dados_historicos = acao_vale.history(period='1d')
-
-# Obter o preço de fechamento mais recente
-ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
-
-print(f"O preço atual da ação VALE3 é: R$ {ultimo_preco_fechamento:.2f}")
+def obter_tabelas(self):
+        tabelas = []
+        try:
+            self.conexao = mysql.connector.connect(
+                host="localhost",
+                user="developer",
+                password="Leo140707",
+                database="RaspagemPuraDeDados"
+            )
+            cursor = self.conexao.cursor()
+            cursor.execute("SHOW TABLES")
+            for tabela in cursor.fetchall():
+                tabelas.append(tabela[0])
+            return tabelas
+        except mysql.connector.Error as erro:
+            print("Erro ao obter tabelas:", erro)
+            return None

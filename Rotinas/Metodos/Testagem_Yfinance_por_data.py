@@ -176,8 +176,6 @@ class Testagem_Yfinance:
 
             print(frequencia_dividendos)
 
-            frequencia_dividendos_tratada = self.extrair_frequencia_dividendos(frequencia_dividendos)
-
             # Converter a string para um DataFrame do pandas
             dados_df = pd.read_csv(StringIO(frequencia_dividendos), delim_whitespace=True, names=['Date', 'Value'], index_col='Date')
 
@@ -195,22 +193,22 @@ class Testagem_Yfinance:
 
             # Verificar se a frequência é mensal, trimestral, anual ou sem frequência definida
             if 20 <= frequencia_moda.days <= 40:
+                frequencia_dividendos_tratada = 'mensal'
                 print('A frequência é mensal.')
             elif 80 <= frequencia_moda.days <= 100:
+                frequencia_dividendos_tratada = 'trimestral'
                 print('A frequência é trimestral.')
             elif 350 <= frequencia_moda.days <= 400:
+                frequencia_dividendos_tratada = 'anual'
                 print('A frequência é anual.')
             else:
+                frequencia_dividendos_tratada = 'irregular'
                 print('A frequência não está definida ou é irregular.')
                 
                 # Identificar os meses mais comuns na lista de datas
                 meses_mais_comuns = dados_df.index.month.value_counts().index.tolist()
                 print(f'Meses mais comuns na lista: {meses_mais_comuns}')
-
-
-
-
-            
+     
             return frequencia_dividendos_tratada
 
         except Exception as e:
@@ -235,28 +233,7 @@ class Testagem_Yfinance:
         except Exception as e:
             # Se ocorrer um erro, exibe o erro e continua
             print(f"Erro ao consultar simbolo {simbolo}: {e}")
-
-    def extrair_frequencia_dividendos(self, dividendos_acao):
-        try:
-            # Converte a string para um DataFrame
-            df = pd.read_csv(StringIO(dividendos_acao), delim_whitespace=True)
-
-            # Converte a coluna 'Date' para datetime
-            df['Date'] = pd.to_datetime(df['Date'])
-
-            # Calcula a diferença entre datas consecutivas
-            diferenca_datas = df['Date'].diff().dt.total_seconds()
-
-            # Calcula a moda da diferença para obter a frequência mais comum
-            frequencia = diferenca_datas.mode().iloc[0]
-
-            return frequencia
-
-        except Exception as e:
-            # Se ocorrer um erro, exibe o erro e continua
-            print(f"Erro ao extrair frequência de dividendos: {e}")
-            return None
-    
+   
     def extrair_relacao_dividendo_valor_da_acao(self, simbolo, data_ex, valor_da_acao):
         try:
             # Conecte ao banco de dados MySQL
