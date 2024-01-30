@@ -15,7 +15,7 @@ try:
     for tabela in tabelas:
         try:
             cursor = conexao.cursor()
-            query = f"ALTER TABLE `{tabela}` ADD COLUMN `moeda` VARCHAR(255)"
+            query = f"ALTER TABLE `{tabela}` ADD COLUMN `dividendo_acao` FLOAT"
             cursor.execute(query)
             conexao.commit()
             print(f"Coluna 'moeda' adicionada com sucesso à tabela '{tabela}'.")

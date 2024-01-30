@@ -85,7 +85,7 @@ class Testagem_Yfinance:
             simbolo_p_analisar_hoje_formatados = [simbolo[0].replace('(', '').replace(')', '').replace(',', '') for simbolo in simbolo_p_analisar_hoje]
 
             simbolos_nao_encontrados_primeira_tentativa = []
-            simbolos_nao_encontrados_segunda_tentativa = []
+            simbolos_encontrados_com_sa = []
 
             for simbolo in simbolo_p_analisar_hoje_formatados:
                 try:
@@ -118,15 +118,15 @@ class Testagem_Yfinance:
                         # Obtém o preço de fechamento mais recente
                         ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
                         print(ultimo_preco_fechamento)
+                        
+                        simbolos_encontrados_com_sa.append(simbolo)
                     except Exception as e:
                         # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
                         print(f"Erro ao consultar simbolo {simbolo}: {e}")
-                        simbolos_nao_encontrados_segunda_tentativa.append(simbolo)
-                        simbolos_nao_encontrados_primeira_tentativa.remove(simbolo)
                         continue
 
-        finally:
-            return simbolos_nao_encontrados_primeira_tentativa  
+        finally: 
+            return simbolos_encontrados_com_sa 
     
     def testagem_preco(self, simbolo):
         try:
@@ -173,8 +173,6 @@ class Testagem_Yfinance:
 
             # Remova a parte específica
             frequencia_dividendos = string_parcialmente_pronta_2.replace("00:00:00-05:00", "")
-
-            print(frequencia_dividendos)
 
             # Converter a string para um DataFrame do pandas
             dados_df = pd.read_csv(StringIO(frequencia_dividendos), delim_whitespace=True, names=['Date', 'Value'], index_col='Date')
@@ -234,7 +232,7 @@ class Testagem_Yfinance:
             # Se ocorrer um erro, exibe o erro e continua
             print(f"Erro ao consultar simbolo {simbolo}: {e}")
    
-    def extrair_relacao_dividendo_valor_da_acao(self, simbolo, data_ex, valor_da_acao):
+    def extrair_relacao_dividendo_valor_da_acao(self, tabela, simbolo, valor_da_acao):
         try:
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
@@ -246,35 +244,53 @@ class Testagem_Yfinance:
 
             cursor = db.cursor()
 
-            # Configura o nome da tabela
-            tabela = 'tabela_' + data_ex
-            print(tabela)
-            print(simbolo)
+            # Execute uma consulta para obter dados da tabela correspondente ao símbolo escolhido
+            consulta_sql = f"SELECT valor_dividendo FROM `{tabela}` WHERE simbolo = %s"
+            cursor.execute(consulta_sql, (simbolo,))
 
-            # Execute uma consulta para obter dados da tabela correspondente à data escolhida
-            consulta_sql = """
-                SELECT
-                    valor_dividendo
-                FROM
-                    %s
-                WHERE
-                    simbolo = %s
-            """
-            cursor.execute(consulta_sql, (tabela, simbolo,))
+            resultados_dos_valores = cursor.fetchone()
+            print(resultados_dos_valores)
+            dividendo = self.conversao_de_dividendos(resultados_dos_valores)
 
-            dividendo = cursor.fetchall()
 
             # Verifica se há resultados
             if dividendo:
-                relacao_dividendo_valor_da_acao = dividendo[0][0] / valor_da_acao
+                print(dividendo)
+                print(valor_da_acao)
+                relacao_dividendo_valor_da_acao = dividendo / valor_da_acao
             else:
                 relacao_dividendo_valor_da_acao = None
 
-        except Exception as e:
-            print(f"Erro ao consultar simbolo {simbolo}: {e}")
+        except mysql.connector.Error as e:
+            print(f"Erro ao consultar símbolo {simbolo}: {e}")
             relacao_dividendo_valor_da_acao = None
 
         finally:
             cursor.close()
             db.close()
             return relacao_dividendo_valor_da_acao
+        
+    def conversao_de_dividendos(self, resultados_dos_valores):
+        # Encontrar a posição da primeira vírgula
+        primeira_virgula = str(resultados_dos_valores).find(',')
+        
+        # Encontrar a posição da segunda vírgula a partir da posição da primeira vírgula
+        segunda_virgula = str(resultados_dos_valores).find(',', primeira_virgula + 1)
+
+        # Criar uma nova string excluindo-a
+        nova_string = str(resultados_dos_valores)[:segunda_virgula] + str(resultados_dos_valores)[segunda_virgula+1:]
+
+        # Remova caracteres desnecessários
+        string_limpa = nova_string.replace("[", "").replace("]", "").replace("(", "").replace(")", "").replace("'", "")
+
+        # Substitua a vírgula pelo ponto como separador decimal
+        string_numerica = string_limpa.replace(',', '.')
+
+        # Converta a string numérica para float
+        try:
+            numero_float = float(string_numerica)
+        except ValueError as erro:
+            print(string_numerica)
+        finally:
+            return numero_float
+            

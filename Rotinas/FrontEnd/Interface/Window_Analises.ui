@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -179,6 +179,111 @@
      <property name="text">
       <string>TextLabel</string>
      </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>Por Período</string>
+    </attribute>
+    <widget class="QWidget" name="gridLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>332</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="text">
+         <string>Amanhã</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="text">
+         <string>Essa Semana</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="text">
+         <string>Hoje</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="pushButton_6">
+        <property name="text">
+         <string>Próxima Semana</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QTableWidget" name="tableWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>90</y>
+       <width>751</width>
+       <height>471</height>
+      </rect>
+     </property>
+     <column>
+      <property name="text">
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Símbolo</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Nome da Empresa</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Data Ex</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Data Pagamento</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Valor do Dividendo</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Valor da Ação</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Frequência</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Moeda</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Relação Valor/Dividendo</string>
+      </property>
+     </column>
     </widget>
    </widget>
   </widget>

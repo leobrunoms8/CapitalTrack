@@ -55,8 +55,29 @@ class Atualizar_Tabelas:
             cursor.close()
             self.conexao.close()
 
+    def atualizar_tabela_dividendos_relacao(self, tabela, simbolo, relacao):
+        print(tabela)
+        print(simbolo)
+        print(relacao)
 
-    def atualizar_tabela_dividendos_relacao(self, simbolo, relacao):
-        pass
+        try:
+            self.conexao = mysql.connector.connect(
+                host="localhost",
+                user="developer",
+                password="Leo140707",
+                database="RaspagemPuraDeDados"
+            )
+            cursor = self.conexao.cursor()
+            query = f"UPDATE `{tabela}` SET dividendo_acao = %s WHERE simbolo = %s"
+            cursor.execute(query, (relacao, simbolo))
+            self.conexao.commit()
+            print("Relação atualizada com sucesso!")
+
+        except mysql.connector.Error as erro:
+            print("Erro ao atualizar Relação:", erro)
+        finally:
+            cursor.close()
+            self.conexao.close()
+
 
    
