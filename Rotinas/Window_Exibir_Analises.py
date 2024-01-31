@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem
-from datetime import datetime
+from datetime import datetime, timedelta
 import mysql.connector
 
 from .FrontEnd.Interface.Window_Analises import Ui_Analises
@@ -204,11 +204,12 @@ class Window_exibir_Analises(QDialog):
     def analisar_por_periodo_hoje(self):
         
         # Verifique se hoje é sábado ou domingo
-        data_ex = datetime.now()
-        data_formato = "%d.%m.%Y"
-        data_objeto = datetime.strptime(data_ex, data_formato)
+        data_objeto = datetime.now()
         dia_semana = data_objeto.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
         # Define o dia de hoje
+        data_ex = data_objeto.strftime("%d.%m.%Y")
+
+
         tabela = 'tabela_' + data_ex
 
         if dia_semana == 5 or dia_semana == 6:  # 5 é sábado, 6 é domingo
@@ -258,6 +259,8 @@ class Window_exibir_Analises(QDialog):
 
         # Análise de preço da ação encontrada
 
+        print(simbolos_encontrados)
+
         for simbolo in simbolos_encontrados:
 
             valor_da_acao = self.testagem.testagem_preco(simbolo)
@@ -274,23 +277,28 @@ class Window_exibir_Analises(QDialog):
         # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
 
         # Análise de preço da ação encontrada
+            
+        print(simbolos_encontrados_com_sa)
 
         for simbolo in simbolos_encontrados_com_sa:
+            try:
 
-            valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
-            print(valor_da_acao)
-        # Análise frequancia de dividendos da empresa
-            frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
-            print(frequencia_da_acao_de_não_encontradas)
-            self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
-        # Análise de moeda da ação
-            moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
-            print(moeda_de_não_encontradas)
-            self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
-        # Análise Relação Dividendo por Valor da Ação
-            relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
-            print('Arelação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
-            self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
+                valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
+                print(valor_da_acao)
+            # Análise frequancia de dividendos da empresa
+                frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
+                print(frequencia_da_acao_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
+            # Análise de moeda da ação
+                moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
+                print(moeda_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
+            # Análise Relação Dividendo por Valor da Ação
+                relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
+                print('A relação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
+            except:
+                continue
         
         # -----------------   Atualiza Tela com as informações analisadas -------------   
         try:
@@ -305,7 +313,7 @@ class Window_exibir_Analises(QDialog):
             cursor = db.cursor()
 
             # Execute uma consulta para obter dados da tabela correspondente à data escolhida
-            cursor.execute(f"SELECT * FROM {tabela}")
+            cursor.execute(f"SELECT * FROM `{tabela}`")
 
             # Recupere os resultados
             result = cursor.fetchall()
@@ -326,57 +334,142 @@ class Window_exibir_Analises(QDialog):
             db.close()
 
     def analisar_por_periodo_amanha(self):
-         # Verifique se hoje é sábado ou domingo
-            hoje = datetime.now()
-            dia_semana = hoje.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
+        # Verifique se hoje é sábado ou domingo
+        data_objeto = datetime.now()
+        dia_amanha = data_objeto + timedelta(days=1)
+        
+        dia_semana = data_objeto.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
+        # Define o dia de hoje
+        data_ex = data_objeto.strftime("%d.%m.%Y")
 
-            if dia_semana == 4 or dia_semana == 5:  # 4 é sexta, 5 é sábado
+
+        tabela = 'tabela_' + data_ex
+
+        if dia_semana == 4 or dia_semana == 5:  # 4 é sexta, 5 é sábado
                 # Mostra uma mensagem informando que é fim de semana
                 QMessageBox.warning(self, "Aviso", "Hoje é fim de semana. Não há consulta de dividendos disponível.")
                 return
         
+        # Método para coletar dados da tabela de dividendos do dia
+
+        self.testagem = Testagem_Yfinance()
+        simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
+        simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
+
+        print('Símbolos Encontrados')
+        print(simbolos_encontrados)
+        print('Símbolos não Encontrados')
+        print(simbolos_encontrados_com_sa)
+
+
+        # -------------- Dropar tabela racunho ----------
+        
+        self.drop = ApagarTabelaGenerico()
+        self.drop.apagar_tabela_generico('rascunho')
+
+        # -------------- Criar tabela rascunho --------------
+        
+        # Comando SQL para criar a tabela com as colunas desejadas
+        criar_tabela_sql = """
+        CREATE TABLE IF NOT EXISTS rascunho (
+            simbolo VARCHAR(255) NOT NULL,
+            nome_da_empresa VARCHAR(255) NOT NULL,
+            data_ex DATE NOT NULL,
+            moeda VARCHAR(255) NOT NULL,
+            valor_dividendo DECIMAL(7, 6) NOT NULL,
+            valor_em_BRL DECIMAL(7, 6) NOT NULL,
+            frequencia VARCHAR(50) NOT NULL,
+            data_pagamento DATE NOT NULL,
+            percentual_acao DECIMAL(7, 6) NOT NULL
+        )
+        """   
+        self.criacao = CriarTabelaGenerico()
+        self.criacao.criar_tabela_generico(criar_tabela_sql)     
+
+        # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
+
+        self.atualizacao = Atualizar_Tabelas()
+
+        # Análise de preço da ação encontrada
+
+        print(simbolos_encontrados)
+
+        for simbolo in simbolos_encontrados:
+
+            valor_da_acao = self.testagem.testagem_preco(simbolo)
+        # Análise frequancia de dividendos da empresa
+            frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
+            self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao)
+        # Análise de moeda da ação
+            moeda = self.testagem.testagem_moeda_da_acao(simbolo)
+            self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda)
+        # Análise Relação Dividendo por Valor da Ação
+            relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
+            self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao)
+
+        # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
+
+        # Análise de preço da ação encontrada
+            
+        print(simbolos_encontrados_com_sa)
+
+        for simbolo in simbolos_encontrados_com_sa:
             try:
-                # Define o dia de amanhã
-                hoje = datetime.now()
-                dia_amanha = hoje + timedelta(days=1)
-                data_amanha = dia_amanha.strftime("%d.%m.%Y")
-                tabela_nome = f"`tabela_{data_amanha}`"
 
-                # Conecte ao banco de dados MySQL
-                db = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados"
-                )
+                valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
+                print(valor_da_acao)
+            # Análise frequancia de dividendos da empresa
+                frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
+                print(frequencia_da_acao_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
+            # Análise de moeda da ação
+                moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
+                print(moeda_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
+            # Análise Relação Dividendo por Valor da Ação
+                relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
+                print('A relação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
+                self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
+            except:
+                continue
+        
+        # -----------------   Atualiza Tela com as informações analisadas -------------   
+        try:
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host="localhost",
+                user="developer",
+                password="Leo140707",
+                database="RaspagemPuraDeDados"
+            )
 
-                cursor = db.cursor()
+            cursor = db.cursor()
 
-                # Execute uma consulta para obter dados da tabela correspondente à data escolhida
-                cursor.execute(f"SELECT * FROM {tabela_nome}")
+            # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+            cursor.execute(f"SELECT * FROM `{tabela}`")
 
-                # Recupere os resultados
-                result = cursor.fetchall()
+            # Recupere os resultados
+            result = cursor.fetchall()
 
-                # Preencha a tabela na janela de "Dividendos"
-                self.ui_dividendos.tableWidget_3.setRowCount(len(result))
-                for row_index, row_data in enumerate(result):
-                    for col_index, col_data in enumerate(row_data):
-                        item = QTableWidgetItem(str(col_data))
-                        self.ui_dividendos.tableWidget_3.setItem(row_index, col_index, item)
+            # Preencha a tabela na janela de "Análises"
+            self.ui_analises.tableWidget_2.setRowCount(len(result))
+            for row_index, row_data in enumerate(result):
+                for col_index, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.ui_analises.tableWidget_2.setItem(row_index, col_index, item)
 
-            except mysql.connector.Error as err:
-                # Handle the error (e.g., table not found)
-                print(f"Error: {err}")
+        except mysql.connector.Error as err:
+            # Handle the error (e.g., table not found)
+            print(f"Error: {err}")
 
-            finally:
-                # Feche a conexão com o banco de dados
-                db.close()
+        finally:
+            # Feche a conexão com o banco de dados
+            db.close()
     
     def analisar_por_periodo_essa_semana(self):
         try:
             # Define o dia de hoje
-            hoje = datetime.now()
+            data_objeto = datetime.now()
 
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
@@ -396,17 +489,117 @@ class Window_exibir_Analises(QDialog):
                 print(i)
                 if i == 5 or i == 6:
                     continue
+                
+                # Atribui o dia da semana para efetuar deslocamento
+                dia_da_semana = data_objeto.weekday()
+                # Busca dia para efetuar o deslocamento
+                desloc = self.switch_case_numero_dia_da_semana2(dia_da_semana)
+                # Efetua o deslocamento da data
+                dia_semana_atual = data_objeto + timedelta(days= i - desloc)
+                # Define o dia para o loop
+                data_ex = dia_semana_atual.strftime("%d.%m.%Y")
 
-                # Calcula a data para o dia da semana atual
-                dia_p_desloc = hoje.weekday()
-                desloc = self.switch_case_numero_dia_da_semana2(dia_p_desloc)
-                dia_semana_atual = hoje + timedelta(days= i - desloc)
-                data_dia_semana_atual = dia_semana_atual.strftime("%d.%m.%Y")
-                tabela_nome = f"`tabela_{data_dia_semana_atual}`"
 
+                tabela = 'tabela_' + data_ex
+          
+                # Método para coletar dados da tabela de dividendos do dia
+
+                self.testagem = Testagem_Yfinance()
+                simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
+                simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
+
+                print('Símbolos Encontrados')
+                print(simbolos_encontrados)
+                print('Símbolos não Encontrados')
+                print(simbolos_encontrados_com_sa)
+
+
+                # -------------- Dropar tabela racunho ----------
+                
+                self.drop = ApagarTabelaGenerico()
+                self.drop.apagar_tabela_generico('rascunho')
+
+                # -------------- Criar tabela rascunho --------------
+                
+                # Comando SQL para criar a tabela com as colunas desejadas
+                criar_tabela_sql = """
+                CREATE TABLE IF NOT EXISTS rascunho (
+                    simbolo VARCHAR(255) NOT NULL,
+                    nome_da_empresa VARCHAR(255) NOT NULL,
+                    data_ex DATE NOT NULL,
+                    moeda VARCHAR(255) NOT NULL,
+                    valor_dividendo DECIMAL(7, 6) NOT NULL,
+                    valor_em_BRL DECIMAL(7, 6) NOT NULL,
+                    frequencia VARCHAR(50) NOT NULL,
+                    data_pagamento DATE NOT NULL,
+                    percentual_acao DECIMAL(7, 6) NOT NULL
+                )
+                """   
+                self.criacao = CriarTabelaGenerico()
+                self.criacao.criar_tabela_generico(criar_tabela_sql)     
+
+                # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
+
+                self.atualizacao = Atualizar_Tabelas()
+
+                # Análise de preço da ação encontrada
+
+                print(simbolos_encontrados)
+
+                for simbolo in simbolos_encontrados:
+
+                    valor_da_acao = self.testagem.testagem_preco(simbolo)
+                # Análise frequancia de dividendos da empresa
+                    frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
+                    self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao)
+                # Análise de moeda da ação
+                    moeda = self.testagem.testagem_moeda_da_acao(simbolo)
+                    self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda)
+                # Análise Relação Dividendo por Valor da Ação
+                    relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
+                    print(relacao)
+                    self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao)
+
+                # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
+
+                # Análise de preço da ação encontrada
+                    
+                print(simbolos_encontrados_com_sa)
+
+                for simbolo in simbolos_encontrados_com_sa:
+                    try:
+
+                        valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
+                        print(valor_da_acao)
+                    # Análise frequancia de dividendos da empresa
+                        frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
+                        print(frequencia_da_acao_de_não_encontradas)
+                        self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
+                    # Análise de moeda da ação
+                        moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
+                        print(moeda_de_não_encontradas)
+                        self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
+                    # Análise Relação Dividendo por Valor da Ação
+                        relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
+                        print('A relação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
+                        self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
+                    except:
+                        continue
+                
+                # -----------------   Atualiza Tela com as informações analisadas -------------   
                 try:
-                    # Execute a consulta para obter dados da tabela correspondente à data escolhida
-                    cursor.execute(f"SELECT * FROM {tabela_nome}")
+                    # Conecte ao banco de dados MySQL
+                    db = mysql.connector.connect(
+                        host="localhost",
+                        user="developer",
+                        password="Leo140707",
+                        database="RaspagemPuraDeDados"
+                    )
+
+                    cursor = db.cursor()
+
+                    # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+                    cursor.execute(f"SELECT * FROM `{tabela}`")
 
                     # Recupere os resultados
                     result = cursor.fetchall()
@@ -414,16 +607,18 @@ class Window_exibir_Analises(QDialog):
                     # Adicione os resultados à lista
                     all_results.extend(result)
 
-                    # Preencha a tabela na janela de "Dividendos"
-                    self.ui_dividendos.tableWidget_4.setRowCount(len(all_results))
-                    for row_index, row_data in enumerate(all_results):
+                    # Preencha a tabela na janela de "Análises"
+                    self.ui_analises.tableWidget_2.setRowCount(len(all_results))
+                    for row_index, row_data in enumerate(result):
                         for col_index, col_data in enumerate(row_data):
                             item = QTableWidgetItem(str(col_data))
-                            self.ui_dividendos.tableWidget_4.setItem(row_index, col_index, item)
+                            self.ui_analises.tableWidget_2.setItem(row_index, col_index, item)
                 except mysql.connector.Error as err:
                     # Handle the error (e.g., table not found)
                     print(f"Error: {err}")
-                    continue
+                finally:
+                    # Feche a conexão com o banco de dados
+                    db.close()
 
         except mysql.connector.Error as err:
             # Handle the error (e.g., table not found)

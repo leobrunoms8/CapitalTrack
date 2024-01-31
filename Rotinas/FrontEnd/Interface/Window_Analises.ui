@@ -256,17 +256,12 @@
      </column>
      <column>
       <property name="text">
-       <string>Data Pagamento</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Valor do Dividendo</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Valor da Ação</string>
+       <string>Data Pagamento</string>
       </property>
      </column>
      <column>
