@@ -467,233 +467,136 @@ class Window_exibir_Analises(QDialog):
             db.close()
     
     def analisar_por_periodo_essa_semana(self):
-        try:
-            # Define o dia de hoje
-            data_objeto = datetime.now()
+        # Define o dia de hoje
+        data_objeto = datetime.now()
 
-            # Conecte ao banco de dados MySQL
-            db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
-            )
+        # Lista para armazenar os resultados de todas as consultas
+        all_results = []
 
-            cursor = db.cursor()
+        for i in range(7):  # Loop pelos dias da semana (0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo)
+            # Pula os sábados (5) e domingos (6)
+            print(i)
+            if i == 5 or i == 6:
+                continue
+            
+            # Atribui o dia da semana para efetuar deslocamento
+            dia_da_semana = data_objeto.weekday()
+            # Busca dia para efetuar o deslocamento
+            desloc = self.switch_case_numero_dia_da_semana2(dia_da_semana)
+            # Efetua o deslocamento da data
+            dia_semana_atual = data_objeto + timedelta(days= i - desloc)
+            # Define o dia para o loop
+            data_ex = dia_semana_atual.strftime("%d.%m.%Y")
 
-            # Lista para armazenar os resultados de todas as consultas
-            all_results = []
 
-            for i in range(7):  # Loop pelos dias da semana (0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo)
-                # Pula os sábados (5) e domingos (6)
-                print(i)
-                if i == 5 or i == 6:
-                    continue
+            tabela = 'tabela_' + data_ex
+        
+            # Método para coletar dados da tabela de dividendos do dia
+
+            self.testagem = Testagem_Yfinance()
+            self.testagem.testagem_automatica(data_ex)
+
+            # -----------------   Atualiza Tela com as informações analisadas -------------   
+            try:
+                 # Conecte ao banco de dados MySQL
+                db = mysql.connector.connect(
+                    host="localhost",
+                    user="developer",
+                    password="Leo140707",
+                    database="RaspagemPuraDeDados")
                 
-                # Atribui o dia da semana para efetuar deslocamento
-                dia_da_semana = data_objeto.weekday()
-                # Busca dia para efetuar o deslocamento
-                desloc = self.switch_case_numero_dia_da_semana2(dia_da_semana)
-                # Efetua o deslocamento da data
-                dia_semana_atual = data_objeto + timedelta(days= i - desloc)
-                # Define o dia para o loop
-                data_ex = dia_semana_atual.strftime("%d.%m.%Y")
+                cursor = db.cursor()
 
+                # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+                cursor.execute(f"SELECT * FROM `{tabela}`")
 
-                tabela = 'tabela_' + data_ex
-          
-                # Método para coletar dados da tabela de dividendos do dia
+                # Recupere os resultados
+                result = cursor.fetchall()
 
-                self.testagem = Testagem_Yfinance()
-                simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
-                simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
+                # Adicione os resultados à lista
+                all_results.extend(result)
 
-                print('Símbolos Encontrados')
-                print(simbolos_encontrados)
-                print('Símbolos não Encontrados')
-                print(simbolos_encontrados_com_sa)
-
-
-                # -------------- Dropar tabela racunho ----------
-                
-                self.drop = ApagarTabelaGenerico()
-                self.drop.apagar_tabela_generico('rascunho')
-
-                # -------------- Criar tabela rascunho --------------
-                
-                # Comando SQL para criar a tabela com as colunas desejadas
-                criar_tabela_sql = """
-                CREATE TABLE IF NOT EXISTS rascunho (
-                    simbolo VARCHAR(255) NOT NULL,
-                    nome_da_empresa VARCHAR(255) NOT NULL,
-                    data_ex DATE NOT NULL,
-                    moeda VARCHAR(255) NOT NULL,
-                    valor_dividendo DECIMAL(7, 6) NOT NULL,
-                    valor_em_BRL DECIMAL(7, 6) NOT NULL,
-                    frequencia VARCHAR(50) NOT NULL,
-                    data_pagamento DATE NOT NULL,
-                    percentual_acao DECIMAL(7, 6) NOT NULL
-                )
-                """   
-                self.criacao = CriarTabelaGenerico()
-                self.criacao.criar_tabela_generico(criar_tabela_sql)     
-
-                # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
-
-                self.atualizacao = Atualizar_Tabelas()
-
-                # Análise de preço da ação encontrada
-
-                print(simbolos_encontrados)
-
-                for simbolo in simbolos_encontrados:
-
-                    valor_da_acao = self.testagem.testagem_preco(simbolo)
-                # Análise frequancia de dividendos da empresa
-                    frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
-                    self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao)
-                # Análise de moeda da ação
-                    moeda = self.testagem.testagem_moeda_da_acao(simbolo)
-                    self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda)
-                # Análise Relação Dividendo por Valor da Ação
-                    relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
-                    print(relacao)
-                    self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao)
-
-                # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
-
-                # Análise de preço da ação encontrada
-                    
-                print(simbolos_encontrados_com_sa)
-
-                for simbolo in simbolos_encontrados_com_sa:
-                    try:
-
-                        valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
-                        print(valor_da_acao)
-                    # Análise frequancia de dividendos da empresa
-                        frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
-                        print(frequencia_da_acao_de_não_encontradas)
-                        self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
-                    # Análise de moeda da ação
-                        moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
-                        print(moeda_de_não_encontradas)
-                        self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
-                    # Análise Relação Dividendo por Valor da Ação
-                        relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
-                        print('A relação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
-                        self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
-                    except:
-                        continue
-                
-                # -----------------   Atualiza Tela com as informações analisadas -------------   
-                try:
-                    # Conecte ao banco de dados MySQL
-                    db = mysql.connector.connect(
-                        host="localhost",
-                        user="developer",
-                        password="Leo140707",
-                        database="RaspagemPuraDeDados"
-                    )
-
-                    cursor = db.cursor()
-
-                    # Execute uma consulta para obter dados da tabela correspondente à data escolhida
-                    cursor.execute(f"SELECT * FROM `{tabela}`")
-
-                    # Recupere os resultados
-                    result = cursor.fetchall()
-
-                    # Adicione os resultados à lista
-                    all_results.extend(result)
-
-                    # Preencha a tabela na janela de "Análises"
-                    self.ui_analises.tableWidget_2.setRowCount(len(all_results))
-                    for row_index, row_data in enumerate(result):
-                        for col_index, col_data in enumerate(row_data):
-                            item = QTableWidgetItem(str(col_data))
-                            self.ui_analises.tableWidget_2.setItem(row_index, col_index, item)
-                except mysql.connector.Error as err:
-                    # Handle the error (e.g., table not found)
-                    print(f"Error: {err}")
-                finally:
-                    # Feche a conexão com o banco de dados
-                    db.close()
-
-        except mysql.connector.Error as err:
-            # Handle the error (e.g., table not found)
-            print(f"Error: {err}")
-
-
-        finally:
-            # Feche a conexão com o banco de dados
-            db.close()
+                # Preencha a tabela na janela de "Análises"
+                self.ui_analises.tableWidget_2.setRowCount(len(all_results))
+                for row_index, row_data in enumerate(result):
+                    for col_index, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.ui_analises.tableWidget_2.setItem(row_index, col_index, item)
+            except mysql.connector.Error as err:
+                # Handle the error (e.g., table not found)
+                print(f"Error: {err}")
+            finally:
+                # Feche a conexão com o banco de dados
+                cursor.close()
+                db.close()
 
     def analisar_por_periodo_pro_semana(self):
-        try:
-            # Define o dia de hoje
-            hoje = datetime.now()
+        # Define o dia de hoje
+        data_objeto = datetime.now()
+        days_number = data_objeto.weekday()
+        end_day = self.switch_case_numero_dia_da_semana1(days_number)
+        start_day = self.switch_case_numero_dia_da_semana0(days_number)
+        print(start_day, end_day)
 
-            # Exemplo de uso
-            days_number = hoje.weekday()
-            end_day = self.switch_case_numero_dia_da_semana1(days_number)
-            start_day = self.switch_case_numero_dia_da_semana0(days_number)
-            print(start_day, end_day)
+        # Lista para armazenar os resultados de todas as consultas
+        all_results = []
 
-            # Conecte ao banco de dados MySQL
-            db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
-            )
+        for i in range(start_day, end_day):  # Loop pelos dias da próxima semana
 
-            cursor = db.cursor()
+            # Atribui o dia da semana para efetuar deslocamento
+            dia_semana_proxima = data_objeto + timedelta(days=i)
+            # Define o dia para o loop
+            data_dia_semana_proxima = dia_semana_proxima.strftime("%d.%m.%Y")
 
-            # Lista para armazenar os resultados de todas as consultas
-            all_results = []
+            # Pula os sábados (5) e domingos (6)
+            conf_data = dia_semana_proxima.weekday()
+            if conf_data == 5 or conf_data == 6:
+                continue
 
-            for i in range(start_day, end_day):  # Loop pelos dias da próxima semana
+
+
+            tabela = 'tabela_' + data_dia_semana_proxima
+        
+            # Método para coletar dados da tabela de dividendos do dia
+
+            self.testagem = Testagem_Yfinance()
+            self.testagem.testagem_automatica(data_dia_semana_proxima)
+
+            # -----------------   Atualiza Tela com as informações analisadas -------------   
+            try:
+                 # Conecte ao banco de dados MySQL
+                db = mysql.connector.connect(
+                    host="localhost",
+                    user="developer",
+                    password="Leo140707",
+                    database="RaspagemPuraDeDados")
                 
-                # Calcula a data para o dia da semana próxima semana
-                dia_semana_proxima = hoje + timedelta(days=i)
-                data_dia_semana_proxima = dia_semana_proxima.strftime("%d.%m.%Y")
-                print(data_dia_semana_proxima)
-                tabela_nome = f"`tabela_{data_dia_semana_proxima}`"
+                cursor = db.cursor()
 
-                # Pula os sábados (5) e domingos (6)
-                conf_data = dia_semana_proxima.weekday()
-                if conf_data == 5 or conf_data == 6:
-                    continue
-                
-                try:
-                    # Execute a consulta para obter dados da tabela correspondente à data escolhida
-                    cursor.execute(f"SELECT * FROM {tabela_nome}")
+                # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+                cursor.execute(f"SELECT * FROM `{tabela}`")
 
-                    # Recupere os resultados
-                    result = cursor.fetchall()
+                # Recupere os resultados
+                result = cursor.fetchall()
 
-                    # Adicione os resultados à lista
-                    all_results.extend(result)
+                # Adicione os resultados à lista
+                all_results.extend(result)
 
-                    # Preencha a tabela na janela de "Dividendos"
-                    self.ui_dividendos.tableWidget_5.setRowCount(len(all_results))
-                    for row_index, row_data in enumerate(all_results):
-                        for col_index, col_data in enumerate(row_data):
-                            item = QTableWidgetItem(str(col_data))
-                            self.ui_dividendos.tableWidget_5.setItem(row_index, col_index, item)
-                except mysql.connector.Error as err:
-                    # Handle the error (e.g., table not found)
-                    print(f"Error: {err}")
-                    continue                
+                # Preencha a tabela na janela de "Análises"
+                self.ui_analises.tableWidget_2.setRowCount(len(all_results))
+                for row_index, row_data in enumerate(all_results):
+                    for col_index, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.ui_analises.tableWidget_2.setItem(row_index, col_index, item)
 
-        except mysql.connector.Error as err:
-            # Handle the error (e.g., table not found)
-            print(f"Error: {err}")
+            except mysql.connector.Error as err:
+                # Handle the error (e.g., table not found)
+                print(f"Error: {err}")
+            finally:
+                # Feche a conexão com o banco de dados
+                cursor.close()
+                db.close()
 
-        finally:
-            # Feche a conexão com o banco de dados
-            db.close()
     
     def switch_case_numero_dia_da_semana0(self, argument):
         switch_dict = {
@@ -721,45 +624,6 @@ class Window_exibir_Analises(QDialog):
 
         return switch_dict.get(argument, 'Esta é a execução padrão')
 
-    def switch_case_numero_dia_da_semana2(self, argument):
-        switch_dict = {
-            0: 0,
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5,
-            6: 6,
-        }
-
-        return switch_dict.get(argument, 'Esta é a execução padrão')
-
-    def switch_case_numero_dia_da_semana0(self, argument):
-        switch_dict = {
-            0: 7,
-            1: 6,
-            2: 5,
-            3: 4,
-            4: 3,
-            5: 2,
-            6: 1,
-        }
-
-        return switch_dict.get(argument, 'Esta é a execução padrão')
-
-    def switch_case_numero_dia_da_semana1(self, argument):
-        switch_dict = {
-            0: 14,
-            1: 13,
-            2: 12,
-            3: 11,
-            4: 10,
-            5: 9,
-            6: 8,
-        }
-    
-        return switch_dict.get(argument, 'Esta é a execução padrão')
-    
     def switch_case_numero_dia_da_semana2(self, argument):
         switch_dict = {
             0: 0,

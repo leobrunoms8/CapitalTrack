@@ -2,6 +2,7 @@ import yfinance as yf
 import mysql.connector
 import pandas as pd
 from io import StringIO
+from .Atualizar_Tabelas import Atualizar_Tabelas
 
 class Testagem_Yfinance:
     def __init__(self):
@@ -150,8 +151,9 @@ class Testagem_Yfinance:
             print(f"Erro ao consultar simbolo {simbolo}: {e}")
              
     def testagem_frequencia_de_dividendos(self, simbolo):
+        frequencia_dividendos_tratada = ''
         try:
-            print("Analisando: '",simbolo,"'")
+            print("Analisando a frequencia de dividendos de: '",simbolo,"'")
 
             # Tenta criar um objeto Ticker para o símbolo
             acao = yf.Ticker(simbolo)
@@ -192,30 +194,27 @@ class Testagem_Yfinance:
             # Verificar se a frequência é mensal, trimestral, anual ou sem frequência definida
             if 20 <= frequencia_moda.days <= 40:
                 frequencia_dividendos_tratada = 'mensal'
-                print('A frequência é mensal.')
+                print('A frequência é ', frequencia_dividendos_tratada, '.')
             elif 80 <= frequencia_moda.days <= 100:
                 frequencia_dividendos_tratada = 'trimestral'
-                print('A frequência é trimestral.')
+                print('A frequência é ', frequencia_dividendos_tratada, '.')
             elif 350 <= frequencia_moda.days <= 400:
                 frequencia_dividendos_tratada = 'anual'
-                print('A frequência é anual.')
+                print('A frequência é ', frequencia_dividendos_tratada, '.')
             else:
                 frequencia_dividendos_tratada = 'irregular'
-                print('A frequência não está definida ou é irregular.')
-                
-                # Identificar os meses mais comuns na lista de datas
-                meses_mais_comuns = dados_df.index.month.value_counts().index.tolist()
-                print(f'Meses mais comuns na lista: {meses_mais_comuns}')
+                print('A frequência não está definida ou é ', frequencia_dividendos_tratada, '.')
      
             return frequencia_dividendos_tratada
 
         except Exception as e:
             # Se ocorrer um erro, exibe o erro e continua
-            print(f"Erro ao consultar simbolo {simbolo}: {e}")
+            print(f"Erro ao consultar os dividendos da ação {simbolo}: {e}")
     
     def testagem_moeda_da_acao(self, simbolo):
+        moeda = ''
         try:
-            print("Analisando: '",simbolo,"'")
+            print("Analisando a modea da ação: '",simbolo,"'")
 
             # Tenta criar um objeto Ticker para o símbolo
             acao = yf.Ticker(simbolo)
@@ -225,14 +224,17 @@ class Testagem_Yfinance:
 
             fast_info = acao.get_fast_info()
             moeda = fast_info['currency']
+            print(moeda)
 
             return moeda
 
         except Exception as e:
             # Se ocorrer um erro, exibe o erro e continua
-            print(f"Erro ao consultar simbolo {simbolo}: {e}")
+            print(f"Erro ao consultar a moeda da ação {simbolo}: {e}")
    
     def extrair_relacao_dividendo_valor_da_acao(self, tabela, simbolo, valor_da_acao):
+        relacao_dividendo_valor_da_acao = None
+        print("Analisando a relação de dividendos por valor da ação de: '",simbolo,"'")
         try:
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
@@ -245,25 +247,21 @@ class Testagem_Yfinance:
             cursor = db.cursor()
 
             # Execute uma consulta para obter dados da tabela correspondente ao símbolo escolhido
-            consulta_sql = f"SELECT valor_dividendo FROM `{tabela}` WHERE simbolo = %s"
+            consulta_sql = f"SELECT valor_dividendo FROM {tabela} WHERE simbolo = %s"
             cursor.execute(consulta_sql, (simbolo,))
 
             resultados_dos_valores = cursor.fetchone()
             print(resultados_dos_valores)
             dividendo = self.conversao_de_dividendos(resultados_dos_valores)
 
+            print(dividendo)
+            print(valor_da_acao)
+            relacao_dividendo_valor_da_acao = dividendo / valor_da_acao
+            print(relacao_dividendo_valor_da_acao)
 
-            # Verifica se há resultados
-            if dividendo:
-                print(dividendo)
-                print(valor_da_acao)
-                relacao_dividendo_valor_da_acao = dividendo / valor_da_acao
-            else:
-                relacao_dividendo_valor_da_acao = None
 
         except mysql.connector.Error as e:
-            print(f"Erro ao consultar símbolo {simbolo}: {e}")
-            relacao_dividendo_valor_da_acao = None
+            print(f"Erro ao consultar a relação de dividendos por valor da ação de: {simbolo}: {e}")
 
         finally:
             cursor.close()
@@ -293,4 +291,100 @@ class Testagem_Yfinance:
             print(string_numerica)
         finally:
             return numero_float
+    
+    def testagem_automatica(self, data_ex):
+        # Define o dia de hoje
+        tabela_nome = f"`tabela_{data_ex}`"
+
+        # Conecte ao banco de dados MySQL
+        db = mysql.connector.connect(
+            host="localhost",
+            user="developer",
+            password="Leo140707",
+            database="RaspagemPuraDeDados"
+        )
+
+        cursor = db.cursor()
+
+        # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+        cursor.execute(f"SELECT simbolo FROM {tabela_nome}")
+        simbolo_p_analisar_hoje = cursor.fetchall()
+
+        # Remover caracteres '(', ')', e ',' de cada string
+        simbolo_p_analisar_hoje_formatados = [simbolo[0].replace('(', '').replace(')', '').replace(',', '') for simbolo in simbolo_p_analisar_hoje]
+
+        simbolos_encontrados_primeira_tentativa = []
+        simbolos_encontrados_segunda_tentativa = []
+        simbolos_nao_encontrados =[]
+        self.atualizacao = Atualizar_Tabelas()
+
+        cursor.close()
+        db.close()
+
+        for simbolo in simbolo_p_analisar_hoje_formatados:
+            try:
+                # Imprime qual Siímbolo está sendo Analisado no momento
+
+                print("Analisando: '",simbolo,"'")
+
+                # Tenta criar um objeto Ticker para o símbolo
+                acao = yf.Ticker(simbolo)
+
+                # Obtém os dados históricos mais recentes (último dia)
+                dados_historicos = acao.history(period='1d')
+
+                # Obtém o preço de fechamento mais recente
+                ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
+
+            except Exception as e:
+                    # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
+                    print(f"Erro ao consultar simbolo {simbolo}: {e}")
+                    try:
+                        # Imprime qual Siímbolo está sendo Analisado no momento
+
+                        simbolo_BRL = simbolo + '.SA'
+
+                        print("Analisando: '",simbolo_BRL,"'")
+
+                        # Tenta criar um objeto Ticker para o símbolo
+                        acao = yf.Ticker(simbolo_BRL)
+
+                        # Obtém os dados históricos mais recentes (último dia)
+                        dados_historicos = acao.history(period='1d')
+                        # Obtém o preço de fechamento mais recente
+                        ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
+                        # print(ultimo_preco_fechamento)
+                        print(ultimo_preco_fechamento)
+                    except Exception as e:
+                        print(f"Erro ao consultar simbolo {simbolo} na segunda tentativa com .SA: {e}")
+                        simbolos_nao_encontrados.append(simbolo)
+                    
+                    try:
+                        # Adiciona o símbolo aos símbolos encontrados
+                        simbolos_encontrados_segunda_tentativa.append(simbolo)
+                        frequencia = self.testagem_frequencia_de_dividendos(simbolo_BRL)
+                        self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela_nome, simbolo, frequencia)
+                        moeda = self.testagem_moeda_da_acao(simbolo_BRL)
+                        self.atualizacao.atualizar_tabela_dividendos_moeda(tabela_nome, simbolo, moeda)
+                        relacao = self.extrair_relacao_dividendo_valor_da_acao(simbolo_BRL)
+                        self.atualizacao.atualizar_tabela_dividendos_relacao(tabela_nome, simbolo, relacao)
+                    except Exception as e:
+                        # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
+                        print(f"Erro ao consultar simbolo {simbolo} na segunda tentativa com .SA: {e}")
+                    continue
+            try:
+                # Adiciona o símbolo aos símbolos encontrados
+                simbolos_encontrados_primeira_tentativa.append(simbolo)
+                frequencia = self.testagem_frequencia_de_dividendos(simbolo)
+                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela_nome, simbolo, frequencia)
+                moeda = self.testagem_moeda_da_acao(simbolo)
+                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela_nome, simbolo, moeda)
+                relacao = self.extrair_relacao_dividendo_valor_da_acao(tabela_nome, simbolo, ultimo_preco_fechamento)
+                self.atualizacao.atualizar_tabela_dividendos_relacao(tabela_nome, simbolo, relacao)
+                print('Execução Automática concluída')
+            except Exception as e:
+                # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
+                print(f"Erro ao consultar simbolo {simbolo} na primeira tentativa: {e}")
+                continue
+
             

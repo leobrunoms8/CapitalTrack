@@ -1,4 +1,5 @@
 import mysql.connector
+from .Formatar_Tabelas import Formatar_Tabelas
 
 
 
@@ -8,9 +9,9 @@ class Atualizar_Tabelas:
         self.conexao = None
 
     def atualizar_tabela_dividendos_moeda(self, tabela, simbolo, moeda):
-        print(tabela)
-        print(simbolo)
-        print(moeda)
+        # Criação da coluna 'Moeda':
+        formatador = Formatar_Tabelas()
+        formatador.adicionar_coluna(tabela, "moeda", "VARCHAR(255)")
 
         try:
             self.conexao = mysql.connector.connect(
@@ -20,7 +21,7 @@ class Atualizar_Tabelas:
                 database="RaspagemPuraDeDados"
             )
             cursor = self.conexao.cursor()
-            query = f"UPDATE `{tabela}` SET moeda = %s WHERE simbolo = %s"
+            query = f"UPDATE {tabela} SET moeda = %s WHERE simbolo = %s"
             cursor.execute(query, (moeda, simbolo))
             self.conexao.commit()
             print("Moeda atualizada com sucesso!")
@@ -32,9 +33,9 @@ class Atualizar_Tabelas:
             self.conexao.close()
 
     def atualizar_tabela_dividendos_frequencia(self, tabela, simbolo, frequencia):
-        print(tabela)
-        print(simbolo)
-        print(frequencia)
+        # Criação da coluna 'frequencia':
+        formatador = Formatar_Tabelas()
+        formatador.adicionar_coluna(tabela, "frequencia", "VARCHAR(255)")
 
         try:
             self.conexao = mysql.connector.connect(
@@ -44,7 +45,7 @@ class Atualizar_Tabelas:
                 database="RaspagemPuraDeDados"
             )
             cursor = self.conexao.cursor()
-            query = f"UPDATE `{tabela}` SET frequencia = %s WHERE simbolo = %s"
+            query = f"UPDATE {tabela} SET frequencia = %s WHERE simbolo = %s"
             cursor.execute(query, (frequencia, simbolo))
             self.conexao.commit()
             print("Frequência atualizada com sucesso!")
@@ -56,9 +57,9 @@ class Atualizar_Tabelas:
             self.conexao.close()
 
     def atualizar_tabela_dividendos_relacao(self, tabela, simbolo, relacao):
-        print(tabela)
-        print(simbolo)
-        print(relacao)
+        # Criação da coluna 'Relaão Dividendo por Valor da Ação':
+        formatador = Formatar_Tabelas()
+        formatador.adicionar_coluna(tabela, "dividendo_acao", "FLOAT")
 
         try:
             self.conexao = mysql.connector.connect(
@@ -68,7 +69,7 @@ class Atualizar_Tabelas:
                 database="RaspagemPuraDeDados"
             )
             cursor = self.conexao.cursor()
-            query = f"UPDATE `{tabela}` SET dividendo_acao = %s WHERE simbolo = %s"
+            query = f"UPDATE {tabela} SET dividendo_acao = %s WHERE simbolo = %s"
             cursor.execute(query, (relacao, simbolo))
             self.conexao.commit()
             print("Relação atualizada com sucesso!")
