@@ -229,10 +229,11 @@
     <property name="title">
      <string>Exibir</string>
     </property>
-    <addaction name="actionTela_Cheia"/>
+    <addaction name="actionAnalises"/>
     <addaction name="actionListas"/>
     <addaction name="actionDividendos"/>
     <addaction name="actionGr_ficos"/>
+    <addaction name="actionOrdens"/>
    </widget>
    <widget class="QMenu" name="menuOrdens">
     <property name="title">
@@ -240,6 +241,8 @@
     </property>
     <addaction name="actionCriar"/>
     <addaction name="actionEditar_2"/>
+    <addaction name="actionLer_Ordem"/>
+    <addaction name="actionChat_Ordens"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuEditar"/>
@@ -272,7 +275,7 @@
     <string>Excluir...</string>
    </property>
   </action>
-  <action name="actionTela_Cheia">
+  <action name="actionAnalises">
    <property name="text">
     <string>Análises</string>
    </property>
@@ -305,6 +308,21 @@
   <action name="actionEditar_2">
    <property name="text">
     <string>Editar</string>
+   </property>
+  </action>
+  <action name="actionLer_Ordem">
+   <property name="text">
+    <string>Ler Ordem</string>
+   </property>
+  </action>
+  <action name="actionChat_Ordens">
+   <property name="text">
+    <string>Chat Ordens</string>
+   </property>
+  </action>
+  <action name="actionOrdens">
+   <property name="text">
+    <string>Ordens</string>
    </property>
   </action>
  </widget>

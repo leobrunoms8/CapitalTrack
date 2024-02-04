@@ -5,6 +5,8 @@ from Rotinas.Window_Exibir_Dividendos import Window_exibir_Dividendos
 from Rotinas.Window_Exibir_Listas import Window_exibir_listas
 from Rotinas.Window_Exibir_Graficos import Window_exibir_Graficos
 from Rotinas.Window_Exibir_Analises import Window_exibir_Analises
+from Rotinas.Window_Exibir_Ordens import Window_exibir_ordens
+from Rotinas.Metodos.Processamento_de_Imagens import Leitura_de_Ordem
 
 
 import sys
@@ -23,14 +25,15 @@ class MainWindow(QMainWindow):
         self.ui.actionDividendos.triggered.connect(self.exibir_dividendos)
         self.ui.actionGr_ficos.triggered.connect(self.exibir_graficos)
         self.ui.actionAnalises.triggered.connect(self.exibir_analises)
+        self.ui.actionLer_Ordem.triggered.connect(self.executar_leitura_ordem)
+        self.ui.actionOrdens.triggered.connect(self.exibir_ordens)
 
         # Mantenha uma instância da classe Window_exibir_Dividendos como um atributo
         self.dividendos_window_instance = Window_exibir_Dividendos(self.ui)
         self.exibir_listas_instance = Window_exibir_listas(self.ui)
         self.exibir_graficos_instance = Window_exibir_Graficos(self.ui)
+        self.exbir_ordens_instance = Window_exibir_ordens(self.ui)
         self.exibir_analises = Window_exibir_Analises(self.ui)
-
-        
 
     def exibir_listas(self):
        # Chamar o método exibir_listas na instância da classe
@@ -45,6 +48,14 @@ class MainWindow(QMainWindow):
     
     def exibir_analises(self):
         self.exibir_analises.exibir_analises()
+    
+    def exibir_ordens(self):
+        self.exbir_ordens_instance.exibir_ordens()
+
+    def executar_leitura_ordem(self):
+        self.ler_ordem_instance = Leitura_de_Ordem()
+        self.ler_ordem_instance.ler_ordem()
+
             
 if __name__ == "__main__":
     app = QApplication(sys.argv)
