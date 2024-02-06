@@ -562,9 +562,10 @@ class Window_exibir_Analises(QDialog):
             self.testagem = Testagem_Yfinance()
             self.testagem.testagem_automatica(data_dia_semana_proxima)
 
-            # -----------------   Atualiza Tela com as informações analisadas -------------   
+            # -----------------   Atualiza Tela com as informações analisadas ------------- 
+              
             try:
-                 # Conecte ao banco de dados MySQL
+                # Conecte ao banco de dados MySQL
                 db = mysql.connector.connect(
                     host="localhost",
                     user="developer",
@@ -579,8 +580,14 @@ class Window_exibir_Analises(QDialog):
                 # Recupere os resultados
                 result = cursor.fetchall()
 
+                # Índice da coluna específica a ser usada para ordenar todas as colunas
+                coluna_index_para_ordenacao = 8
+
+                # Classificar os dados com base nos valores da coluna específica
+                day_results = sorted(result, key=lambda x: float(x[coluna_index_para_ordenacao]) if x[coluna_index_para_ordenacao] else float('-inf'), reverse=True)
+
                 # Adicione os resultados à lista
-                all_results.extend(result)
+                all_results.extend(day_results)
 
                 # Preencha a tabela na janela de "Análises"
                 self.ui_analises.tableWidget_2.setRowCount(len(all_results))

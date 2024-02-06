@@ -257,7 +257,8 @@ class Testagem_Yfinance:
             print(dividendo)
             print(valor_da_acao)
             relacao_dividendo_valor_da_acao = dividendo / valor_da_acao
-            print(relacao_dividendo_valor_da_acao)
+            relacao_final = relacao_dividendo_valor_da_acao * 100
+            print(relacao_final)
 
 
         except mysql.connector.Error as e:
@@ -366,7 +367,7 @@ class Testagem_Yfinance:
                         self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela_nome, simbolo, frequencia)
                         moeda = self.testagem_moeda_da_acao(simbolo_BRL)
                         self.atualizacao.atualizar_tabela_dividendos_moeda(tabela_nome, simbolo, moeda)
-                        relacao = self.extrair_relacao_dividendo_valor_da_acao(simbolo_BRL)
+                        relacao = self.extrair_relacao_dividendo_valor_da_acao(tabela_nome, simbolo, ultimo_preco_fechamento)
                         self.atualizacao.atualizar_tabela_dividendos_relacao(tabela_nome, simbolo, relacao)
                     except Exception as e:
                         # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
