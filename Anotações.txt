@@ -1,0 +1,8 @@
+indices de desempenho
+ 1.Máx Loss vs Gain Médio
+ 2.Preço Médio
+ 3.Estabilidade
+ 4.Gain diário vs Loss diário
+ 5.Taxa de dias vencedores
+ 6.Taxa de acerto
+ 7.Payoff

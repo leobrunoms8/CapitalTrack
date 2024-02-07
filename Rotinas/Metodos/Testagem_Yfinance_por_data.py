@@ -323,6 +323,9 @@ class Testagem_Yfinance:
         db.close()
 
         for simbolo in simbolo_p_analisar_hoje_formatados:
+            frequencia = ''
+            moeda = ''
+            relacao = ''
             try:
                 # Imprime qual Siímbolo está sendo Analisado no momento
 
