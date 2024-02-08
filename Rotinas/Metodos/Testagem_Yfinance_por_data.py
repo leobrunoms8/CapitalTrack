@@ -317,6 +317,7 @@ class Testagem_Yfinance:
         simbolos_encontrados_primeira_tentativa = []
         simbolos_encontrados_segunda_tentativa = []
         simbolos_nao_encontrados =[]
+        valor_dinamico = []
         self.atualizacao = Atualizar_Tabelas()
 
         cursor.close()
@@ -340,6 +341,8 @@ class Testagem_Yfinance:
                 # Obtém o preço de fechamento mais recente
                 ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
 
+                valor_dinamico.append((simbolo, ultimo_preco_fechamento))
+
             except Exception as e:
                     # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
                     print(f"Erro ao consultar simbolo {simbolo}: {e}")
@@ -359,6 +362,9 @@ class Testagem_Yfinance:
                         ultimo_preco_fechamento = dados_historicos['Close'].iloc[-1]
                         # print(ultimo_preco_fechamento)
                         print(ultimo_preco_fechamento)
+
+                        valor_dinamico.append((simbolo, ultimo_preco_fechamento))
+
                     except Exception as e:
                         print(f"Erro ao consultar simbolo {simbolo} na segunda tentativa com .SA: {e}")
                         simbolos_nao_encontrados.append(simbolo)
@@ -390,5 +396,7 @@ class Testagem_Yfinance:
                 # Se ocorrer um erro, adiciona o símbolo aos símbolos não encontrados
                 print(f"Erro ao consultar simbolo {simbolo} na primeira tentativa: {e}")
                 continue
+        print(valor_dinamico)    
+        return valor_dinamico
 
             

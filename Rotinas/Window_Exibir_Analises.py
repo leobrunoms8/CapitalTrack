@@ -540,6 +540,7 @@ class Window_exibir_Analises(QDialog):
 
         # Lista para armazenar os resultados de todas as consultas
         all_results = []
+        lista_valor_dinamico = []
 
         for i in range(start_day, end_day):  # Loop pelos dias da próxima semana
 
@@ -560,7 +561,8 @@ class Window_exibir_Analises(QDialog):
             # Método para coletar dados da tabela de dividendos do dia
 
             self.testagem = Testagem_Yfinance()
-            self.testagem.testagem_automatica(data_dia_semana_proxima)
+            valor_dinamico = self.testagem.testagem_automatica(data_dia_semana_proxima)
+            lista_valor_dinamico.append(valor_dinamico)
 
             # -----------------   Atualiza Tela com as informações analisadas ------------- 
               
@@ -603,6 +605,7 @@ class Window_exibir_Analises(QDialog):
                 # Feche a conexão com o banco de dados
                 cursor.close()
                 db.close()
+                print(lista_valor_dinamico)
 
     
     def switch_case_numero_dia_da_semana0(self, argument):

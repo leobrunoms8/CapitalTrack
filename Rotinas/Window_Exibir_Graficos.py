@@ -1,10 +1,13 @@
 from matplotlib.backend_bases import FigureCanvasBase
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
+import mysql.connector
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog
-from sqlalchemy import create_engine
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+import yfinance as yf
+import mplfinance as mpf
 
 from .FrontEnd.Interface.Window_Graficos import Ui_Window_Graficos
 
@@ -16,75 +19,122 @@ class Window_exibir_Graficos(QDialog):
         self.ui_graficos = Ui_Window_Graficos()
         self.ui_graficos.setupUi(self)
 
-        self.ui_graficos.pushButton.clicked.connect(self.exibir_grafico)
+       
 
     def exibir_grafico(self):
+
+        self.ui_graficos.pushButton.clicked.connect(self.carregar_grafico)
+        self.ui_graficos.pushButton_2.clicked.connect(self.analile_grafica_entre_data_ex)
+
+
         self.show()
 
+    def carregar_grafico(self):
         try:
-            engine = create_engine("mysql+pymysql://developer:Leo140707@localhost/raspagempuradedados")
-
-            data_inicial = self.ui_graficos.dateEdit.date().toString("dd.MM.yyyy")
-            data_final = self.ui_graficos.dateEdit_2.date().toString("dd.MM.yyyy")
+            data_inicial = self.ui_graficos.dateEdit.date().toString("yyyy-MM-dd")
+            data_final = self.ui_graficos.dateEdit_2.date().toString("yyyy-MM-dd")
 
             datas_consulta = pd.date_range(data_inicial, data_final, freq='D').strftime('%d.%m.%Y').tolist()
 
             dados_resultado = []
+            resultados = []
 
-            with engine.connect() as conexao:
-                for data_ex in datas_consulta:
-                    try:
-                        tabela_existe = self.verificar_tabela_existente(conexao, data_ex)
+            
+            for data_ex in datas_consulta:
+                try:
+                    # Conecte ao banco de dados MySQL
+                    db = mysql.connector.connect(
+                        host="localhost",
+                        user="developer",
+                        password="Leo140707",
+                        database="RaspagemPuraDeDados"
+                    )
 
-                        if tabela_existe:
-                            consulta_sql = f"SELECT data_ex, SUM(CAST(REPLACE(valor_dividendo, ',', '.') AS DECIMAL(10, 4))) as soma_valor_dividendo " \
-                                           f"FROM `tabela_{data_ex}` GROUP BY data_ex"
+                    cursor = db.cursor()
+                    consulta_sql = f"SELECT valor_dividendo FROM `tabela_{data_ex}`"
 
-                            resultados = conexao.execute(consulta_sql).fetchall()
+                    cursor.execute(consulta_sql)
 
-                            if not resultados:
-                                print(f"Nenhum dado encontrado para a tabela_{data_ex}")
-                                continue
+                    resultados = cursor.fetchall()
+                    print(resultados)
+                   
+                    for tupla in resultados:
+                        for item in tupla:
+                            # Substituir vírgulas por pontos para garantir que o Python interprete corretamente
+                            item_alterado = item.replace(',', '.').replace('(', '').replace(')', '')
+                            # Substituir vírgulas por pontos para garantir que o Python interprete corretamente
+                            item_corrigido = item_alterado.replace(',', '')
+                            # Converter para float
+                            numero_float = float(item_corrigido)
+                            dados_resultado.append((data_ex, numero_float))
 
-                            for resultado in resultados:
-                                dados_resultado.append({'data': resultado[0], 'soma_valor_dividendo': resultado[1]})
 
-                    except Exception as err:
-                        print(f"Erro ao processar a data {data_ex}: {err}")
-                        continue
+                except Exception as err:
+                    print(f"Erro ao processar a data {data_ex}: {err}")
+                    continue
 
-            resultado_df = pd.DataFrame(dados_resultado)
-            resultado_df['data'] = resultado_df['data'].replace('--', np.nan)
-            resultado_df['data'] = pd.to_datetime(resultado_df['data'], format='%d.%m.%Y', errors='coerce')
-            resultado_df = resultado_df.sort_values(by='data')
+            print(dados_resultado)
 
-            fig, ax = plt.subplots(figsize=(8, 5))
-            ax.bar(resultado_df['data'], resultado_df['soma_valor_dividendo'])
-            ax.set_xlabel('Data Ex')
+            # Criando um DataFrame com os dados
+            df = pd.DataFrame(dados_resultado, columns=['Data', 'Valor'])
+
+            # Convertendo a coluna 'Data' para o tipo datetime
+            df['Data'] = pd.to_datetime(df['Data'], format='%d.%m.%Y')
+
+            # Agrupando os valores por data e calculando a soma
+            df_agrupado = df.groupby('Data')['Valor'].sum().reset_index()
+
+            # Plotando o gráfico de barras
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.bar(df_agrupado['Data'], df_agrupado['Valor'], color='blue')
+            ax.set_xlabel('Data')
             ax.set_ylabel('Soma do Valor de Dividendo')
-            ax.set_title('Soma do Valor de Dividendo por Data EX')
+            ax.set_title('Soma do Valor de Dividendo por Data')
             plt.xticks(rotation=45)
 
-            canvas = FigureCanvasBase(fig)
+            # Convertendo o gráfico em um canvas
+            canvas = FigureCanvas(fig)
 
+            # Verificando se há um layout definido para a interface gráfica
             if self.ui_graficos.graphicsView.layout() is None:
-                layout = QtWidgets.QVBoxLayout(self.ui_dividendos.graphicsView)
+                # Se não houver, cria um novo layout
+                layout = QtWidgets.QVBoxLayout(self.ui_graficos.graphicsView)
                 layout.setContentsMargins(0, 0, 0, 0)
                 layout.addWidget(canvas)
             else:
+                # Se houver, substitui o widget existente pelo novo canvas
                 old_widget = self.ui_graficos.graphicsView.layout().itemAt(0).widget()
                 self.ui_graficos.graphicsView.layout().replaceWidget(old_widget, canvas)
                 old_widget.close()
 
+            # Desenha o canvas
             canvas.draw()
 
-        except Exception as e:
-            print(f"Erro ao exibir gráfico: {e}")
-
-    def verificar_tabela_existente(self, conexao, data_ex):
-        try:
-            result = conexao.execute(f"SHOW TABLES LIKE 'tabela_{data_ex}'")
-            return result.fetchone() is not None
         except Exception as err:
-            print(f"Erro ao verificar a existência da tabela tabela_{data_ex}: {err}")
-            return False
+            print(f"Erro ao processar: {err}")
+
+    def analile_grafica_entre_data_ex(self):
+        # Função para plotar candlesticks com base em datas específicas
+        def plot_candlesticks(symbol, start_date, end_date):
+            # Obter dados históricos do Yahoo Finance
+            data = yf.download(symbol, start=start_date, end=end_date)
+            
+            # Plotar candlesticks usando mplfinance
+            mpf.plot(data, type='candle', style='charles', volume=True)
+
+        # Data ex da ação e data ex antecessora
+        data_ex = self.ui_graficos.dateEdit_3.date().toString("yyyy-MM-dd")
+        data_ex_antecessora = self.ui_graficos.dateEdit_4.date().toString("yyyy-MM-dd")
+
+        # Símbolo da ação
+        symbol = self.ui_graficos.lineEdit.text()
+
+        # Chamar a função para plotar candlesticks
+        plot_candlesticks(symbol, data_ex_antecessora, data_ex)
+    
+    def plot_candlesticks(self, symbol, start_date, end_date):
+            # Obter dados históricos do Yahoo Finance
+            data = yf.download(symbol, start=start_date, end=end_date)
+            
+            # Plotar candlesticks usando mplfinance
+            mpf.plot(data, type='candle', style='charles', volume=True)

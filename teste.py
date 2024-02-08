@@ -1,25 +1,20 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel
+import yfinance as yf
+import mplfinance as mpf
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+# Função para plotar candlesticks com base em datas específicas
+def plot_candlesticks(symbol, start_date, end_date):
+    # Obter dados históricos do Yahoo Finance
+    data = yf.download(symbol, start=start_date, end=end_date)
+    
+    # Plotar candlesticks usando mplfinance
+    mpf.plot(data, type='candle', style='charles', volume=True)
 
-        self.setWindowTitle("Hello World")
-        self.setGeometry(100, 100, 300, 150)
+# Data ex da ação e data ex antecessora
+data_ex = '2023-01-01'
+data_ex_antecessora = '2022-01-01'
 
-        self.button = QPushButton("Mostrar Hello World", self)
-        self.button.setGeometry(50, 50, 200, 30)
-        self.button.clicked.connect(self.show_hello_world)
+# Símbolo da ação
+symbol = 'AAPL'  # Altere para o símbolo da ação desejada
 
-        self.label = QLabel("", self)
-        self.label.setGeometry(50, 90, 200, 30)
-
-    def show_hello_world(self):
-        self.label.setText("Hello World")
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+# Chamar a função para plotar candlesticks
+plot_candlesticks(symbol, data_ex_antecessora, data_ex)
