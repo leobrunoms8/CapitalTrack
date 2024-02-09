@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
-    <height>613</height>
+    <width>1338</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>761</width>
-     <height>591</height>
+     <width>1321</width>
+     <height>831</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -70,8 +70,8 @@
       <rect>
        <x>10</x>
        <y>90</y>
-       <width>741</width>
-       <height>471</height>
+       <width>1301</width>
+       <height>711</height>
       </rect>
      </property>
      <column>
@@ -96,12 +96,22 @@
      </column>
      <column>
       <property name="text">
+       <string>Valor do Dividendo</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Data Pagamento</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Valor do Dividendo</string>
+       <string>Frequencia</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Moeda</string>
       </property>
      </column>
      <column>
@@ -230,8 +240,8 @@
       <rect>
        <x>0</x>
        <y>90</y>
-       <width>751</width>
-       <height>471</height>
+       <width>1311</width>
+       <height>711</height>
       </rect>
      </property>
      <column>

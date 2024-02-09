@@ -18,6 +18,12 @@ class MainWindow(QMainWindow):
         # Create an instance of the main window design class
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # Dados a serem repassados as classes seguintes
+        host = "localhost"
+        user = "developer"
+        password = "Leo140707"
+        database = "RaspagemPuraDeDados"
         
 
         # Connect menu item signals to corresponding functions
@@ -29,11 +35,11 @@ class MainWindow(QMainWindow):
         self.ui.actionOrdens.triggered.connect(self.exibir_ordens)
 
         # Mantenha uma instância da classe Window_exibir_Dividendos como um atributo
-        self.dividendos_window_instance = Window_exibir_Dividendos(self.ui)
-        self.exibir_listas_instance = Window_exibir_listas(self.ui)
+        self.dividendos_window_instance = Window_exibir_Dividendos(self.ui, host, user, password, database)
+        self.exibir_listas_instance = Window_exibir_listas(self.ui, host, user, password, database)
         self.exibir_graficos_instance = Window_exibir_Graficos(self.ui)
         self.exbir_ordens_instance = Window_exibir_ordens(self.ui)
-        self.exibir_analises = Window_exibir_Analises(self.ui)
+        self.exibir_analises = Window_exibir_Analises(self.ui, host, user, password, database)
 
     def exibir_listas(self):
        # Chamar o método exibir_listas na instância da classe

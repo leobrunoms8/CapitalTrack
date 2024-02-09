@@ -24,7 +24,7 @@ class Window_exibir_Graficos(QDialog):
     def exibir_grafico(self):
 
         self.ui_graficos.pushButton.clicked.connect(self.carregar_grafico)
-        self.ui_graficos.pushButton_2.clicked.connect(self.analile_grafica_entre_data_ex)
+        self.ui_graficos.pushButton_2.clicked.connect(self.analile_grafica_entre_datas)
 
 
         self.show()
@@ -113,24 +113,19 @@ class Window_exibir_Graficos(QDialog):
         except Exception as err:
             print(f"Erro ao processar: {err}")
 
-    def analile_grafica_entre_data_ex(self):
-        # Função para plotar candlesticks com base em datas específicas
-        def plot_candlesticks(symbol, start_date, end_date):
-            # Obter dados históricos do Yahoo Finance
-            data = yf.download(symbol, start=start_date, end=end_date)
-            
-            # Plotar candlesticks usando mplfinance
-            mpf.plot(data, type='candle', style='charles', volume=True)
-
+    def analile_grafica_entre_datas(self):
+        
         # Data ex da ação e data ex antecessora
-        data_ex = self.ui_graficos.dateEdit_3.date().toString("yyyy-MM-dd")
-        data_ex_antecessora = self.ui_graficos.dateEdit_4.date().toString("yyyy-MM-dd")
+        data_ex = self.ui_graficos.dateEdit_4.date().toString("yyyy-MM-dd")
+        data_ex_antecessora = self.ui_graficos.dateEdit_3.date().toString("yyyy-MM-dd")
+        print(data_ex)
+        print(data_ex_antecessora)
 
         # Símbolo da ação
         symbol = self.ui_graficos.lineEdit.text()
 
         # Chamar a função para plotar candlesticks
-        plot_candlesticks(symbol, data_ex_antecessora, data_ex)
+        self.plot_candlesticks(symbol, data_ex_antecessora, data_ex)
     
     def plot_candlesticks(self, symbol, start_date, end_date):
             # Obter dados históricos do Yahoo Finance
@@ -138,3 +133,6 @@ class Window_exibir_Graficos(QDialog):
             
             # Plotar candlesticks usando mplfinance
             mpf.plot(data, type='candle', style='charles', volume=True)
+
+    def grafico_entre_data_ex(self):
+        pass

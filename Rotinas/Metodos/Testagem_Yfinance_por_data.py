@@ -5,7 +5,11 @@ from io import StringIO
 from .Atualizar_Tabelas import Atualizar_Tabelas
 
 class Testagem_Yfinance:
-    def __init__(self):
+    def __init__(self, host, user, password, database):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
         self
 
 
@@ -18,10 +22,10 @@ class Testagem_Yfinance:
 
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -70,10 +74,10 @@ class Testagem_Yfinance:
 
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -238,10 +242,10 @@ class Testagem_Yfinance:
         try:
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -299,10 +303,10 @@ class Testagem_Yfinance:
 
         # Conecte ao banco de dados MySQL
         db = mysql.connector.connect(
-            host="localhost",
-            user="developer",
-            password="Leo140707",
-            database="RaspagemPuraDeDados"
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            database=self.database
         )
 
         cursor = db.cursor()
@@ -324,9 +328,10 @@ class Testagem_Yfinance:
         db.close()
 
         for simbolo in simbolo_p_analisar_hoje_formatados:
-            frequencia = ''
-            moeda = ''
-            relacao = ''
+            frequencia = None
+            moeda = None
+            relacao = None
+            ultimo_preco_fechamento = None
             try:
                 # Imprime qual Siímbolo está sendo Analisado no momento
 

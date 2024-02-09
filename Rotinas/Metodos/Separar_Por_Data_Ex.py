@@ -3,11 +3,15 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 class SeparadorPorDataEx:
-    def __init__(self, db_config):
-        self.db_config = db_config
-        self.conn = mysql.connector.connect(**db_config)
+    def __init__(self, host, user, password, database):
+        self.conn = mysql.connector.connect(
+                host=host,
+                user=user,
+                password=password,
+                database=database
+            )
         self.cursor = self.conn.cursor()
-        self.engine = create_engine(f"mysql+mysqlconnector://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}")
+        self.engine = create_engine(f"mysql+mysqlconnector://{user}:{password}@{host}/{database}")
 
     def separar_por_data_ex(self):
         # Consulta para obter todas as datas únicas da coluna "data_ex"

@@ -7,8 +7,12 @@ from Rotinas.Metodos.Raspagem_e_Separacao import Raspagem_e_Separacao_Investing
 import mysql.connector
 
 class Window_exibir_listas(QDialog):
-    def __init__(self, ui_mainwindow):
+    def __init__(self, ui_mainwindow, host, user, password, database):
         super(Window_exibir_listas, self).__init__()
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
         # Recebe a instância da classe Ui_MainWindow
         self.ui_mainwindow = ui_mainwindow
@@ -55,19 +59,19 @@ class Window_exibir_listas(QDialog):
                 QMessageBox.warning(self, "Aviso", "Amanhã é fim de semana. Não há consulta de dividendos disponível.")
                 return
 
-        raspagem = Raspagem_e_Separacao_Investing("timeFrame_tomorrow")
+        raspagem = Raspagem_e_Separacao_Investing("timeFrame_tomorrow", self.host, self.user, self.password, self.database)
         raspagem.realizar_raspagem()
 
         self.preencher_tablela()
 
     def executar_raspagem_essa_semana(self):
-        raspagem = Raspagem_e_Separacao_Investing("timeFrame_thisWeek")
+        raspagem = Raspagem_e_Separacao_Investing("timeFrame_thisWeek", self.host, self.user, self.password, self.database)
         raspagem.realizar_raspagem()
 
         self.preencher_tablela()
 
     def executar_raspagem_proxima_semana(self):
-        raspagem = Raspagem_e_Separacao_Investing("timeFrame_nextWeek")
+        raspagem = Raspagem_e_Separacao_Investing("timeFrame_nextWeek", self.host, self.user, self.password, self.database)
         raspagem.realizar_raspagem()
 
         self.preencher_tablela()
@@ -75,10 +79,10 @@ class Window_exibir_listas(QDialog):
     def preencher_tablela(self):
         # Conecte ao banco de dados MySQL
         db = mysql.connector.connect(
-            host="localhost",
-            user="developer",
-            password="Leo140707",
-            database="RaspagemPuraDeDados"
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            database=self.database
         )
 
         cursor = db.cursor()

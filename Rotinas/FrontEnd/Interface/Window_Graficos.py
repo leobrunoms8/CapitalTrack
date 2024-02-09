@@ -91,8 +91,8 @@ class Ui_Window_Graficos(object):
         self.groupBox_2.setTitle(_translate("Window_Graficos", "Dados da Ação"))
         self.label_3.setText(_translate("Window_Graficos", "Simbolo"))
         self.lineEdit.setPlaceholderText(_translate("Window_Graficos", "Digite aqui"))
-        self.label_4.setText(_translate("Window_Graficos", "1° Data Ex"))
-        self.label_5.setText(_translate("Window_Graficos", "2° Data Ex"))
+        self.label_4.setText(_translate("Window_Graficos", "Data Antecessora"))
+        self.label_5.setText(_translate("Window_Graficos", "Data Sucessora"))
         self.pushButton_2.setText(_translate("Window_Graficos", "Plotar Gráfico"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Window_Graficos", "Analise Gráfica Entre Data Ex"))
 

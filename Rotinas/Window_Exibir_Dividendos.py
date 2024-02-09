@@ -10,8 +10,12 @@ import mysql.connector
 
 
 class Window_exibir_Dividendos(QDialog):
-    def __init__(self, ui_mainwindow):
+    def __init__(self, ui_mainwindow, host, user, password, database):
         super(Window_exibir_Dividendos, self).__init__()
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
         # Recebe a instância da classe Ui_MainWindow
         self.ui_mainwindow = ui_mainwindow
@@ -40,10 +44,10 @@ class Window_exibir_Dividendos(QDialog):
 
         # Conecte ao banco de dados MySQL
         db = mysql.connector.connect(
-            host="localhost",
-            user="developer",
-            password="Leo140707",
-            database="RaspagemPuraDeDados"
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            database=self.database
         )
 
         cursor = db.cursor()
@@ -87,10 +91,10 @@ class Window_exibir_Dividendos(QDialog):
 
                 # Conecte ao banco de dados MySQL
                 db = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados"
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database
                 )
 
                 cursor = db.cursor()
@@ -135,10 +139,10 @@ class Window_exibir_Dividendos(QDialog):
 
                 # Conecte ao banco de dados MySQL
                 db = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados"
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database
                 )
 
                 cursor = db.cursor()
@@ -169,12 +173,12 @@ class Window_exibir_Dividendos(QDialog):
             # Define o dia de hoje
             hoje = datetime.now()
 
-            # Conecte ao banco de dados MySQL
+           # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -238,10 +242,10 @@ class Window_exibir_Dividendos(QDialog):
 
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()

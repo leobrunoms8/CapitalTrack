@@ -1,22 +1,25 @@
 import mysql.connector
 
 class Criar_Tabela:
-    def __init__(self):
-       self
+    def __init__(self, host, user, password, database):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
     def criar_tabela(self):
         conexao = None
         try:
-            # Estabelece a conexão com o servidor MySQL e seleciona o banco de dados "Stocks"
-            conexao = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             # Cria um cursor para executar comandos SQL
-            cursor = conexao.cursor()
+            cursor = db.cursor()
 
             # Comando SQL para criar a tabela com as colunas desejadas
             criar_tabela_sql = """
@@ -40,9 +43,9 @@ class Criar_Tabela:
             print(f"Erro ao criar a tabela: {erro}")
 
         finally:
-            if conexao is not None and conexao.is_connected():
+            if db is not None and db.is_connected():
                 cursor.close()
-                conexao.close()
+                db.close()
                 print("Conexão encerrada.")
 
 

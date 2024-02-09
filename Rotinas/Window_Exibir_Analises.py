@@ -9,8 +9,12 @@ from .Metodos.Criar_Tabela_Generico import CriarTabelaGenerico
 from .Metodos.Atualizar_Tabelas import Atualizar_Tabelas
 
 class Window_exibir_Analises(QDialog):
-    def __init__(self, ui_mainwindow):
+    def __init__(self, ui_mainwindow, host, user, password, database):
         super(Window_exibir_Analises, self).__init__()
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
         # Recebe a instância da classe Ui_MainWindow
         self.ui_mainwindow = ui_mainwindow
@@ -31,112 +35,77 @@ class Window_exibir_Analises(QDialog):
         
         self.show()
     def analisar_por_data(self):
-            # Verifique se hoje é sábado ou domingo
-            data_ex = self.ui_analises.dateEdit.date().toString("dd.MM.yyyy")
-            data_formato = "%d.%m.%Y"
-            data_objeto = datetime.strptime(data_ex, data_formato)
-            dia_semana = data_objeto.weekday()  # 0 é segunda-feira, 1 é terça-feira, ..., 6 é domingo
-            # Define o dia de hoje
-            tabela = 'tabela_' + data_ex
+        # Define o dia de hoje"
+        hoje = self.ui_analises.dateEdit.date().toString("dd.MM.yyyy")
+        tabela = 'tabela_' + hoje
 
-            if dia_semana == 5 or dia_semana == 6:  # 5 é sábado, 6 é domingo
-                # Mostra uma mensagem informando que é fim de semana
-                QMessageBox.warning(self, "Aviso", "Hoje é fim de semana. Não há consulta de dividendos disponível.")
-                return
+        # Lista para armazenar os resultados de todas as consultas
+        all_results = []
+        lista_valor_dinamico = []
+
+        self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
+        valor_dinamico = self.testagem.testagem_automatica(hoje)
+        lista_valor_dinamico.append(valor_dinamico)
+
+        # -----------------   Atualiza Tela com as informações analisadas ------------- 
             
-            # Método para coletar dados da tabela de dividendos do dia
-
-            self.testagem = Testagem_Yfinance()
-            simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
-            simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
-
-            print('Símbolos Encontrados')
-            print(simbolos_encontrados)
-            print('Símbolos não Encontrados')
-            print(simbolos_encontrados_com_sa)
-
-
-            # -------------- Dropar tabela racunho ----------
-            
-            self.drop = ApagarTabelaGenerico()
-            self.drop.apagar_tabela_generico('rascunho')
-
-            # -------------- Criar tabela rascunho --------------
-            
-            # Comando SQL para criar a tabela com as colunas desejadas
-            criar_tabela_sql = """
-            CREATE TABLE IF NOT EXISTS rascunho (
-                simbolo VARCHAR(255) NOT NULL,
-                nome_da_empresa VARCHAR(255) NOT NULL,
-                data_ex DATE NOT NULL,
-                moeda VARCHAR(255) NOT NULL,
-                valor_dividendo DECIMAL(7, 6) NOT NULL,
-                valor_em_BRL DECIMAL(7, 6) NOT NULL,
-                frequencia VARCHAR(50) NOT NULL,
-                data_pagamento DATE NOT NULL,
-                percentual_acao DECIMAL(7, 6) NOT NULL
+        try:
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
-            """   
-            self.criacao = CriarTabelaGenerico()
-            self.criacao.criar_tabela_generico(criar_tabela_sql)     
-
-            # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
-
-            self.atualizacao = Atualizar_Tabelas()
-
-            # Análise de preço da ação encontrada
-
-            for simbolo in simbolos_encontrados:
-
-                valor_da_acao = self.testagem.testagem_preco(simbolo)
-            # Análise frequancia de dividendos da empresa
-                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo)
-                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao)
-            # Análise de moeda da ação
-                moeda = self.testagem.testagem_moeda_da_acao(simbolo)
-                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda)
-            # Análise Relação Dividendo por Valor da Ação
-                relacao = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
-                self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao)
-
-            # -----------------   Pegar linha a linha de acordo com a lista de não encontrados -------------
-
-            # Análise de preço da ação encontrada
-
-            for simbolo in simbolos_encontrados_com_sa:
-
-                valor_da_acao = self.testagem.testagem_preco(simbolo + '.SA')
-                print(valor_da_acao)
-            # Análise frequancia de dividendos da empresa
-                frequencia_da_acao_de_não_encontradas = self.testagem.testagem_frequencia_de_dividendos(simbolo + '.SA')
-                print(frequencia_da_acao_de_não_encontradas)
-                self.atualizacao.atualizar_tabela_dividendos_frequencia(tabela, simbolo, frequencia_da_acao_de_não_encontradas)
-            # Análise de moeda da ação
-                moeda_de_não_encontradas = self.testagem.testagem_moeda_da_acao(simbolo + '.SA')
-                print(moeda_de_não_encontradas)
-                self.atualizacao.atualizar_tabela_dividendos_moeda(tabela, simbolo, moeda_de_não_encontradas)
-            # Análise Relação Dividendo por Valor da Ação
-                relacao_de_não_encontradas = self.testagem.extrair_relacao_dividendo_valor_da_acao(tabela, simbolo, valor_da_acao)
-                print('Arelação do valor da ação pelo dividendo é: ', relacao_de_não_encontradas)
-                self.atualizacao.atualizar_tabela_dividendos_relacao(tabela, simbolo, relacao_de_não_encontradas)
             
-            # -----------------   Atualizar banco de dados com as informações analisadas -------------   
+            cursor = db.cursor()
+
+            # Execute uma consulta para obter dados da tabela correspondente à data escolhida
+            cursor.execute(f"SELECT * FROM `{tabela}`")
+
+            # Recupere os resultados
+            result = cursor.fetchall()
+
+            # Índice da coluna específica a ser usada para ordenar todas as colunas
+            coluna_index_para_ordenacao = 8
+
+            # Classificar os dados com base nos valores da coluna específica
+            day_results = sorted(result, key=lambda x: float(x[coluna_index_para_ordenacao]) if x[coluna_index_para_ordenacao] else float('-inf'), reverse=True)
+
+            # Adicione os resultados à lista
+            all_results.extend(day_results)
+
+            # Preencha a tabela na janela de "Análises"
+            self.ui_analises.tableWidget.setRowCount(len(all_results))
+            for row_index, row_data in enumerate(all_results):
+                for col_index, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.ui_analises.tableWidget.setItem(row_index, col_index, item)
+
+        except mysql.connector.Error as err:
+            # Handle the error (e.g., table not found)
+            print(f"Error: {err}")
+        finally:
+            # Feche a conexão com o banco de dados
+            cursor.close()
+            db.close()
+            print(lista_valor_dinamico)  
            
     def analisar_por_acao(self):
             
             simbolo_da_acao = self.ui_analises.lineEdit.text()
             
-             # Estabelecer conexão com o banco de dados
-            conexao = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados"
-                )
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
+            )
             
             try:
                 # Criar um cursor para executar consultas SQL
-                cursor = conexao.cursor()
+                cursor = db.cursor()
 
                 # Consultar as tabelas no banco de dados
                 cursor.execute("SHOW TABLES")
@@ -184,7 +153,7 @@ class Window_exibir_Analises(QDialog):
 
             # -----------------   Pegar dados da API Yfinance -------------
 
-            self.testagem = Testagem_Yfinance()
+            self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
             
             # Análise de preço da ação encontrada
 
@@ -219,7 +188,7 @@ class Window_exibir_Analises(QDialog):
         
         # Método para coletar dados da tabela de dividendos do dia
 
-        self.testagem = Testagem_Yfinance()
+        self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
         simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
         simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
 
@@ -304,10 +273,10 @@ class Window_exibir_Analises(QDialog):
         try:
             # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -352,7 +321,7 @@ class Window_exibir_Analises(QDialog):
         
         # Método para coletar dados da tabela de dividendos do dia
 
-        self.testagem = Testagem_Yfinance()
+        self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
         simbolos_encontrados = self.testagem.testagem_por_data_encontrados(data_ex)
         simbolos_encontrados_com_sa = self.testagem.testagem_por_data_nao_encontrados(data_ex)
 
@@ -435,12 +404,12 @@ class Window_exibir_Analises(QDialog):
         
         # -----------------   Atualiza Tela com as informações analisadas -------------   
         try:
-            # Conecte ao banco de dados MySQL
+           # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
-                host="localhost",
-                user="developer",
-                password="Leo140707",
-                database="RaspagemPuraDeDados"
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
             )
 
             cursor = db.cursor()
@@ -493,17 +462,18 @@ class Window_exibir_Analises(QDialog):
         
             # Método para coletar dados da tabela de dividendos do dia
 
-            self.testagem = Testagem_Yfinance()
+            self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
             self.testagem.testagem_automatica(data_ex)
 
             # -----------------   Atualiza Tela com as informações analisadas -------------   
             try:
-                 # Conecte ao banco de dados MySQL
+                # Conecte ao banco de dados MySQL
                 db = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados")
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database
+                )
                 
                 cursor = db.cursor()
 
@@ -560,7 +530,7 @@ class Window_exibir_Analises(QDialog):
         
             # Método para coletar dados da tabela de dividendos do dia
 
-            self.testagem = Testagem_Yfinance()
+            self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
             valor_dinamico = self.testagem.testagem_automatica(data_dia_semana_proxima)
             lista_valor_dinamico.append(valor_dinamico)
 
@@ -569,10 +539,11 @@ class Window_exibir_Analises(QDialog):
             try:
                 # Conecte ao banco de dados MySQL
                 db = mysql.connector.connect(
-                    host="localhost",
-                    user="developer",
-                    password="Leo140707",
-                    database="RaspagemPuraDeDados")
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database
+                )
                 
                 cursor = db.cursor()
 
@@ -606,8 +577,7 @@ class Window_exibir_Analises(QDialog):
                 cursor.close()
                 db.close()
                 print(lista_valor_dinamico)
-
-    
+  
     def switch_case_numero_dia_da_semana0(self, argument):
         switch_dict = {
             0: 7,
