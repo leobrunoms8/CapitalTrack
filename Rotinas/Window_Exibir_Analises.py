@@ -124,51 +124,43 @@ class Window_exibir_Analises(QDialog):
             finally:
                 # Fechar o cursor e a conexão
                 cursor.close()
-                conexao.close()
-
-
-            # -------------- Dropar tabela racunho ----------
-            
-            self.drop = ApagarTabelaGenerico()
-            self.drop.apagar_tabela_generico('rascunho')
-
-            # -------------- Criar tabela rascunho --------------
-            
-            # Comando SQL para criar a tabela com as colunas desejadas
-            criar_tabela_sql = """
-            CREATE TABLE IF NOT EXISTS rascunho (
-                simbolo VARCHAR(255) NOT NULL,
-                nome_da_empresa VARCHAR(255) NOT NULL,
-                data_ex DATE NOT NULL,
-                moeda VARCHAR(255) NOT NULL,
-                valor_dividendo DECIMAL(7, 6) NOT NULL,
-                valor_em_BRL DECIMAL(7, 6) NOT NULL,
-                frequencia VARCHAR(50) NOT NULL,
-                data_pagamento DATE NOT NULL,
-                percentual_acao DECIMAL(7, 6) NOT NULL
-            )
-            """   
-            self.criacao = CriarTabelaGenerico()
-            self.criacao.criar_tabela_generico(criar_tabela_sql)     
+                db.close()
 
             # -----------------   Pegar dados da API Yfinance -------------
+            try: 
 
-            self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
-            
-            # Análise de preço da ação encontrada
-
-            valor_da_acao = self.testagem.testagem_preco(simbolo_da_acao)
-            print(valor_da_acao)
-            
-            # Análise frequancia de dividendos da empresa
-            
-            frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo_da_acao)
-            print(frequencia_da_acao)
-
-            # Análise de moeda da ação
+                self.testagem = Testagem_Yfinance(self.host, self.user, self.password, self.database)
                 
-            moeda = self.testagem.testagem_moeda_da_acao(simbolo_da_acao)
-            print(moeda)
+                # Análise de preço da ação encontrada
+
+                valor_da_acao = self.testagem.testagem_preco(simbolo_da_acao)
+                print(valor_da_acao)
+                
+                # Análise frequancia de dividendos da empresa
+                
+                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo_da_acao)
+                print(frequencia_da_acao)
+
+                # Análise de moeda da ação
+                    
+                moeda = self.testagem.testagem_moeda_da_acao(simbolo_da_acao)
+                print(moeda)
+            except:
+                # Análise de preço da ação encontrada
+                simbolo_da_acao_BRL = simbolo_da_acao + '.SA'
+
+                valor_da_acao = self.testagem.testagem_preco(simbolo_da_acao_BRL)
+                print(valor_da_acao)
+                
+                # Análise frequancia de dividendos da empresa
+                
+                frequencia_da_acao = self.testagem.testagem_frequencia_de_dividendos(simbolo_da_acao_BRL)
+                print(frequencia_da_acao)
+
+                # Análise de moeda da ação
+                    
+                moeda = self.testagem.testagem_moeda_da_acao(simbolo_da_acao_BRL)
+                print(moeda)
 
     def analisar_por_periodo_hoje(self):
         

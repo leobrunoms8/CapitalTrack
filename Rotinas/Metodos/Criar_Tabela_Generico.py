@@ -8,7 +8,6 @@ class CriarTabelaGenerico:
         self.database = database
 
     def criar_tabela_generico(self, comando):
-        conexao = None
         try:
            # Conecte ao banco de dados MySQL
             db = mysql.connector.connect(
@@ -31,6 +30,6 @@ class CriarTabelaGenerico:
         finally:
             if db is not None and db.is_connected():
                 cursor.close()
-                conexao.close()
+                db.close()
                 print("Conexão encerrada.") 
     
