@@ -1,20 +1,39 @@
-import yfinance as yf
-import mplfinance as mpf
+import sys
+from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout
+from PyQt5.QtCore import QTimer, QDateTime
 
-# Função para plotar candlesticks com base em datas específicas
-def plot_candlesticks(symbol, start_date, end_date):
-    # Obter dados históricos do Yahoo Finance
-    data = yf.download(symbol, start=start_date, end=end_date)
-    
-    # Plotar candlesticks usando mplfinance
-    mpf.plot(data, type='candle', style='charles', volume=True)
+class Dialog(QDialog):
+    def __init__(self):
+        super().__init__()
 
-# Data ex da ação e data ex antecessora
-data_ex = '2023-01-01'
-data_ex_antecessora = '2022-01-01'
+        self.setWindowTitle("Data e Hora em Tempo Real")
+        self.resize(300, 100)
 
-# Símbolo da ação
-symbol = 'AAPL'  # Altere para o símbolo da ação desejada
+        layout = QVBoxLayout()
 
-# Chamar a função para plotar candlesticks
-plot_candlesticks(symbol, data_ex_antecessora, data_ex)
+        self.label = QLabel()
+        layout.addWidget(self.label)
+
+        self.setLayout(layout)
+
+        # Inicializa o timer para atualizar a data e hora a cada segundo
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.atualizar_data_hora)
+        self.timer.start(1000)  # a cada 1000 ms (1 segundo)
+
+        # Atualiza a data e hora assim que a janela for mostrada
+        self.atualizar_data_hora()
+
+    def atualizar_data_hora(self):
+        # Obtém a data e hora atual
+        data_hora_atual = QDateTime.currentDateTime()
+        # Formata a data e hora como string
+        data_hora_formatada = data_hora_atual.toString("dd/MM/yyyy HH:mm:ss")
+        # Define a string formatada como texto da label
+        self.label.setText(data_hora_formatada)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    dialog = Dialog()
+    dialog.show()
+    sys.exit(app.exec_())

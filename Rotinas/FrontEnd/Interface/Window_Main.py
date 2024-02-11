@@ -141,6 +141,8 @@ class Ui_MainWindow(object):
         self.actionChat_Ordens.setObjectName("actionChat_Ordens")
         self.actionOrdens = QtWidgets.QAction(MainWindow)
         self.actionOrdens.setObjectName("actionOrdens")
+        self.actionModos = QtWidgets.QAction(MainWindow)
+        self.actionModos.setObjectName("actionModos")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addSeparator()
@@ -153,6 +155,7 @@ class Ui_MainWindow(object):
         self.menuExibir.addAction(self.actionDividendos)
         self.menuExibir.addAction(self.actionGr_ficos)
         self.menuExibir.addAction(self.actionOrdens)
+        self.menuExibir.addAction(self.actionModos)
         self.menuOrdens.addAction(self.actionCriar)
         self.menuOrdens.addAction(self.actionEditar_2)
         self.menuOrdens.addAction(self.actionLer_Ordem)
@@ -209,6 +212,7 @@ class Ui_MainWindow(object):
         self.actionLer_Ordem.setText(_translate("MainWindow", "Ler Ordem"))
         self.actionChat_Ordens.setText(_translate("MainWindow", "Chat Ordens"))
         self.actionOrdens.setText(_translate("MainWindow", "Ordens"))
+        self.actionModos.setText(_translate("MainWindow", "Modos"))
 
 
 if __name__ == "__main__":
