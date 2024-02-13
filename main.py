@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.exibir_graficos_instance = Window_exibir_Graficos(self.ui)
         self.exbir_ordens_instance = Window_exibir_ordens(self.ui)
         self.exibir_analises_instance = Window_exibir_Analises(self.ui, host, user, password, database)
-        self.exbir_modos_instance = Window_exibir_modos(self)
+        self.exbir_modos_instance = Window_exibir_modos(self.ui, host, user, password, database)
 
     def exibir_listas(self):
        # Chamar o método exibir_listas na instância da classe
