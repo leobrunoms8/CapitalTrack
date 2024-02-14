@@ -3,16 +3,21 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from .FrontEnd.Interface.Window_Ordens import Ui_Window_Ordens
 from .Metodos.Processamento_de_Imagens import Leitura_de_Ordem
+from .Metodos.Pesquisar_em_Tabelas import PesquisarEmTabelas
 
 import os
 import mimetypes
 
 class Window_exibir_ordens(QDialog):
-    def __init__(self, ui_mainwindow):
+    def __init__(self, ui_mainwindow, host, user, password, database):
         super(Window_exibir_ordens, self).__init__()
 
         # Recebe a instância da classe Ui_MainWindow
         self.ui_mainwindow = ui_mainwindow
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
         # Crie uma instância da classe Ui_Window_Ordens
         self.ui_ordens = Ui_Window_Ordens()
@@ -20,6 +25,7 @@ class Window_exibir_ordens(QDialog):
 
         # Conecte o clique do botão à função que executa o código desejado
         self.ui_ordens.pushButton.clicked.connect(self.verificar_notas_recebidas)
+        self.ui_ordens.pushButton_2.clicked.connect(self.iniciar_trade)
 
     def exibir_ordens(self):
         self.show()
@@ -69,7 +75,6 @@ class Window_exibir_ordens(QDialog):
         self.ui_ordens.label.setText(texto_extraido)
         self.caregamento_de_informacoes_da_nota(texto_extraido)
 
-
     def extract_text_from_image(self, image_path):
         self.leitura = Leitura_de_Ordem()
         texto_da_imagem = self.leitura.ler_ordem_automatico(image_path)
@@ -102,7 +107,29 @@ class Window_exibir_ordens(QDialog):
         print("Quantidade executada:", informacoes['quantidade_executada'])
         print("Preço médio:", informacoes['preco_medio'])
 
-        
+    def iniciar_trade(self):
+        # Atribui valores depositados em LineEdits nas variáveis
+        simbolo =  self.ui_ordens.lineEdit.text()
+        valor_de_entrada = float(self.ui_ordens.lineEdit_2.text())
+        quantidade = int(self.ui_ordens.lineEdit_3.text())
+        data_de_entrada = self.ui_ordens.lineEdit_4.text()
+
+        # Inicia a verificação em banco de dados
+        # Nome da Empresa
+        pesquisa = PesquisarEmTabelas(self.host, self.user, self.password, self.database)
+        nome_da_empresa = pesquisa.nome_da_empresa_com_simbolo(simbolo)
+        self.ui_ordens.label_9.setText(nome_da_empresa)
+        # Moeda
+        moeda = pesquisa.moeda_com_simbolo(simbolo)
+        self.ui_ordens.label_10.setText(moeda)
+
+
+        print(simbolo)
+        print(valor_de_entrada)
+        print(quantidade)
+        print(data_de_entrada)
+        print(nome_da_empresa)
+
 
                 
 
