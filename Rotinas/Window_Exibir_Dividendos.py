@@ -154,11 +154,11 @@ class Window_exibir_Dividendos(QDialog):
                 result = cursor.fetchall()
 
                 # Preencha a tabela na janela de "Dividendos"
-                self.ui_dividendos.tableWidget_3.setRowCount(len(result))
+                self.ui_dividendos.tableWidget_8.setRowCount(len(result))
                 for row_index, row_data in enumerate(result):
                     for col_index, col_data in enumerate(row_data):
                         item = QTableWidgetItem(str(col_data))
-                        self.ui_dividendos.tableWidget_3.setItem(row_index, col_index, item)
+                        self.ui_dividendos.tableWidget_8.setItem(row_index, col_index, item)
 
             except mysql.connector.Error as err:
                 # Handle the error (e.g., table not found)
@@ -210,11 +210,11 @@ class Window_exibir_Dividendos(QDialog):
                     all_results.extend(result)
 
                     # Preencha a tabela na janela de "Dividendos"
-                    self.ui_dividendos.tableWidget_4.setRowCount(len(all_results))
+                    self.ui_dividendos.tableWidget_7.setRowCount(len(all_results))
                     for row_index, row_data in enumerate(all_results):
                         for col_index, col_data in enumerate(row_data):
                             item = QTableWidgetItem(str(col_data))
-                            self.ui_dividendos.tableWidget_4.setItem(row_index, col_index, item)
+                            self.ui_dividendos.tableWidget_7.setItem(row_index, col_index, item)
                 except mysql.connector.Error as err:
                     # Handle the error (e.g., table not found)
                     print(f"Error: {err}")

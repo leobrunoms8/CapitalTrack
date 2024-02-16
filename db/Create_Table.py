@@ -8,7 +8,7 @@ def criar_tabela():
             host="localhost",
             user="developer",
             password="Leo140707",
-            database="Stocks"
+            database="RaspagemPuraDeDados"
         )
 
         # Cria um cursor para executar comandos SQL
@@ -16,20 +16,27 @@ def criar_tabela():
 
         # Comando SQL para criar a tabela com as colunas desejadas
         criar_tabela_sql = """
-        CREATE TABLE IF NOT EXISTS Dividendos (
+        CREATE TABLE IF NOT EXISTS lista_de_trades (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            simbolo VARCHAR(255) NOT NULL,
-            nome_da_empresa VARCHAR(255) NOT NULL,
-            data_ex DATE NOT NULL,
-            valor_dividendo DECIMAL(10, 2) NOT NULL,
-            frequencia VARCHAR(50) NOT NULL,
-            data_pagamento DATE NOT NULL,
-            percentual_acao DECIMAL(5, 2) NOT NULL
+            valor_de_entrada FLOAT,
+            simbolo VARCHAR(255),
+            quantidade DECIMAL(10, 2),
+            data_de_entrada DATE,
+            valor_dividendo FLOAT,
+            valor_premio FLOAT,
+            data_ex DATE,
+            data_pagamento DATE,
+            coretora VARCHAR(50),
+            moeda VARCHAR(50),
+            valor_de_saida FLOAT,
+            ganho_real FLOAT,
+            ganho_percentual FLOAT,
+            acerto VARCHAR(255)
         )
         """
         cursor.execute(criar_tabela_sql)
 
-        print("Tabela 'Dividendos' criada com sucesso.")
+        print("Tabela 'lista_de_trades' criada com sucesso.")
 
     except mysql.connector.Error as erro:
         print(f"Erro ao criar a tabela: {erro}")

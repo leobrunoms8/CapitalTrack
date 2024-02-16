@@ -216,7 +216,7 @@ class Window_exibir_Analises(QDialog):
 
         # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
 
-        self.atualizacao = Atualizar_Tabelas()
+        self.atualizacao = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
 
         # Análise de preço da ação encontrada
 
@@ -349,7 +349,7 @@ class Window_exibir_Analises(QDialog):
 
         # -----------------   Pegar linha a linha de acordo com a lista de encontrados -------------
 
-        self.atualizacao = Atualizar_Tabelas()
+        self.atualizacao = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
 
         # Análise de preço da ação encontrada
 

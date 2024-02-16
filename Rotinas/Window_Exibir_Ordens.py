@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 from .FrontEnd.Interface.Window_Ordens import Ui_Window_Ordens
 from .Metodos.Processamento_de_Imagens import Leitura_de_Ordem
 from .Metodos.Pesquisar_em_Tabelas import PesquisarEmTabelas
+from .Metodos.Atualizar_Tabelas import Atualizar_Tabelas
 
 import os
 import mimetypes
@@ -26,6 +27,7 @@ class Window_exibir_ordens(QDialog):
         # Conecte o clique do botão à função que executa o código desejado
         self.ui_ordens.pushButton.clicked.connect(self.verificar_notas_recebidas)
         self.ui_ordens.pushButton_2.clicked.connect(self.iniciar_trade)
+        self.ui_ordens.pushButton_3.clicked.connect(self.inserir_trade_na_lista)
 
     def exibir_ordens(self):
         self.show()
@@ -108,11 +110,9 @@ class Window_exibir_ordens(QDialog):
         print("Preço médio:", informacoes['preco_medio'])
 
     def iniciar_trade(self):
-        # Atribui valores depositados em LineEdits nas variáveis
+        # Atribui valor depositado em LineEdit na variável simbolo
         simbolo =  self.ui_ordens.lineEdit.text()
-        valor_de_entrada = float(self.ui_ordens.lineEdit_2.text())
-        quantidade = int(self.ui_ordens.lineEdit_3.text())
-        data_de_entrada = self.ui_ordens.lineEdit_4.text()
+        
 
         # Inicia a verificação em banco de dados
         # Nome da Empresa
@@ -122,13 +122,34 @@ class Window_exibir_ordens(QDialog):
         # Moeda
         moeda = pesquisa.moeda_com_simbolo(simbolo)
         self.ui_ordens.label_10.setText(moeda)
+        # Frequencia
+        frequencia = pesquisa.frequencia_com_simbolo(simbolo)
+        self.ui_ordens.label_12.setText(frequencia)
+        # Proximo Dividendo
+        prox_dividendo = pesquisa.proximo_dividendo_com_simbolo(simbolo)
+        self.ui_ordens.label_14.setText(prox_dividendo)
+        # Valor do Dividendo
+        valor_dividendo = pesquisa.valor_dividendo_com_simbolo(simbolo)
+        self.ui_ordens.label_16.setText(valor_dividendo)
 
+    def inserir_trade_na_lista(self):
+        # Atribui valores depositados em LineEdits nas variáveis
+        simbolo =  self.ui_ordens.lineEdit.text()
+        valor_de_entrada = float(self.ui_ordens.lineEdit_2.text())
+        quantidade = int(self.ui_ordens.lineEdit_3.text())
+        data_de_entrada = self.ui_ordens.lineEdit_4.text()
+        dividendo = float(self.ui_ordens.lineEdit_5.text())
+        premio = float(self.ui_ordens.lineEdit_6.text())
+        data_ex = self.ui_ordens.lineEdit_7.text()
+        data_pagamento = self.ui_ordens.lineEdit_8.text()
+        corretora = self.ui_ordens.lineEdit_9.text()
+        moeda = self.ui_ordens.lineEdit_10.text()
 
-        print(simbolo)
-        print(valor_de_entrada)
-        print(quantidade)
-        print(data_de_entrada)
-        print(nome_da_empresa)
+        atualizador = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
+        id_inserido = atualizador.atualizar_tabela_trade(simbolo, valor_de_entrada, quantidade, data_de_entrada, dividendo, premio, data_ex, data_pagamento, corretora, moeda)
+        print(id_inserido)
+        
+        
 
 
                 

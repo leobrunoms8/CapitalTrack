@@ -29,7 +29,10 @@ class SeparadorPorDataEx:
                     nome_da_empresa,
                     data_ex,
                     valor_dividendo,
-                    data_pagamento
+                    data_pagamento,
+                    '' as moeda,
+                    '' as frequencia,
+                    '' as dividendo_acao
                 FROM
                     raspagem
                 WHERE
@@ -46,5 +49,3 @@ class SeparadorPorDataEx:
     def fechar_conexao(self):
         # Fechar conexão
         self.conn.close()
-
-
