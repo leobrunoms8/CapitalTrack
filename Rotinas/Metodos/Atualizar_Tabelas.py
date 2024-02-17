@@ -111,7 +111,7 @@ class Atualizar_Tabelas:
             INSERT INTO lista_de_trades (
                 simbolo, 
                 valor_de_entrada,
-                quantidade, 
+                quantidade_de_entrada, 
                 data_de_entrada, 
                 valor_dividendo, 
                 valor_premio, 
@@ -141,5 +141,49 @@ class Atualizar_Tabelas:
             # Retorna o ID da linha inserida
             return id_inserido
 
+        except mysql.connector.Error as err:
+            print("Erro ao inserir na tabela:", err)
+
+    def finalizar_tabela_trade(self, id, valor_de_saida, quantidade_de_saida, data_de_saida, ganho_real, ganho_percentual, acerto, link_para_trade):
+        print(id, valor_de_saida, quantidade_de_saida, data_de_saida, ganho_real, ganho_percentual, acerto, link_para_trade)
+
+        try:
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
+            )
+            
+            cursor = db.cursor()
+
+            # Query de inserção de dados
+           # Query de atualização de dados
+            update_query = """
+            UPDATE lista_de_trades
+            SET valor_de_saida = %s,
+                quantidade_de_saida = %s,
+                data_de_saida = %s,
+                ganho_real = %s,
+                ganho_percentual = %s,
+                acerto = %s,
+                link_para_trade = %s
+            WHERE id = %s
+            """
+
+            # Valores para atualização na tabela
+            values = (valor_de_saida, quantidade_de_saida, data_de_saida, ganho_real, ganho_percentual, acerto, link_para_trade, id)
+
+            # Executar a consulta de inserção
+            cursor.execute(update_query, values)
+
+            # Commit da transação
+            db.commit()
+
+            # Fechar cursor e conexão
+            cursor.close()
+            db.close()
+           
         except mysql.connector.Error as err:
             print("Erro ao inserir na tabela:", err)

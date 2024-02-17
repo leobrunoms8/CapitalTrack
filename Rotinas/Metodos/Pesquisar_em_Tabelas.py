@@ -273,6 +273,29 @@ class PesquisarEmTabelas:
             # Fechar o cursor e a conexão
             cursor.close()
             db.close()
-   
+    
+    def trade_com_id(self, id):
+        # Conecte ao banco de dados MySQL
+        db = mysql.connector.connect(
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
+
+        try:
+            # Criar um cursor para executar consultas SQL
+            cursor = db.cursor()
+
+            # Execute uma consulta para obter dados da tabela correspondente ao símbolo escolhido
+            consulta_sql = f"SELECT valor_de_entrada, quantidade_de_entrada FROM lista_de_trades WHERE id = %s"
+            cursor.execute(consulta_sql, (id,))
+
+            resultados_dos_valores = cursor.fetchone()
+            return resultados_dos_valores
+
+        except mysql.connector.Error as e:
+                print(f"Erro ao consultar Trade {id}: {e}")
+        
 
    

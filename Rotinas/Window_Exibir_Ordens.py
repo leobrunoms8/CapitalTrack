@@ -8,6 +8,7 @@ from .Metodos.Atualizar_Tabelas import Atualizar_Tabelas
 
 import os
 import mimetypes
+import mysql.connector
 
 class Window_exibir_ordens(QDialog):
     def __init__(self, ui_mainwindow, host, user, password, database):
@@ -28,6 +29,9 @@ class Window_exibir_ordens(QDialog):
         self.ui_ordens.pushButton.clicked.connect(self.verificar_notas_recebidas)
         self.ui_ordens.pushButton_2.clicked.connect(self.iniciar_trade)
         self.ui_ordens.pushButton_3.clicked.connect(self.inserir_trade_na_lista)
+        self.ui_ordens.pushButton_4.clicked.connect(self.listar_todos_os_trades)
+        self.ui_ordens.pushButton_5.clicked.connect(self.calculo_finalizacao_trade)
+        self.ui_ordens.pushButton_7.clicked.connect(self.finalizar_trade)
 
     def exibir_ordens(self):
         self.show()
@@ -112,7 +116,6 @@ class Window_exibir_ordens(QDialog):
     def iniciar_trade(self):
         # Atribui valor depositado em LineEdit na variável simbolo
         simbolo =  self.ui_ordens.lineEdit.text()
-        
 
         # Inicia a verificação em banco de dados
         # Nome da Empresa
@@ -148,11 +151,88 @@ class Window_exibir_ordens(QDialog):
         atualizador = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
         id_inserido = atualizador.atualizar_tabela_trade(simbolo, valor_de_entrada, quantidade, data_de_entrada, dividendo, premio, data_ex, data_pagamento, corretora, moeda)
         print(id_inserido)
+
+    def calculo_finalizacao_trade(self):
+        # Atribui valores depositados em LineEdits nas variáveis 
+        id =  int(self.ui_ordens.lineEdit_18.text())
+        valor_de_saida = float(self.ui_ordens.lineEdit_17.text())
+        quantidade_de_saida = int(self.ui_ordens.lineEdit_16.text())
         
+
+        # Inicia a verificação em banco de dados
+        pesquisa = PesquisarEmTabelas(self.host, self.user, self.password, self.database)
+
+        trade = pesquisa.trade_com_id(id)
+        # Verifica se há resultados da consulta
+        if trade: 
+            # Atribui valor de entrada para cálculos de ganho
+            valor_de_entrada = float(trade[0])
+            # Atribui valor de quantidade para finalização de Trade  
+            quantidade_de_entrada = int(trade[1]) 
+            if quantidade_de_saida == quantidade_de_entrada:
+                print('Trade Finalizado')
+            else:
+                print('Trade não Finalizado')
+            
+            # Cálculo de Ganho Real
+            valor_investido = quantidade_de_entrada * valor_de_entrada
+            valor_liquidado = quantidade_de_saida * valor_de_saida
+            self.ganho_real = valor_liquidado - valor_investido
+
+            # Cálculo de Ganho Percentual
+            self.ganho_percentual = (self.ganho_real / valor_investido) * 100
+        else:
+            print(f"Trade com ID {id} não encontrado.")
         
+        # Verifica se foi acerto ou Ganho
+        if self.ganho_real >= 0:
+            self.acerto = 'S'
+        else:
+            self.acerto = 'N'
+            
+        
+        self.ui_ordens.label_33.setText(str(self.ganho_real))
+        self.ui_ordens.label_24.setText(str(self.ganho_percentual) + '%')
+        self.ui_ordens.label_22.setText(self.acerto)
+    
+    def finalizar_trade(self):
+        # Atribui valores depositados em LineEdits nas variáveis 
+        id =  int(self.ui_ordens.lineEdit_18.text())
+        valor_de_saida = float(self.ui_ordens.lineEdit_17.text())
+        quantidade_de_saida = int(self.ui_ordens.lineEdit_16.text())
+        data_de_saida = self.ui_ordens.lineEdit_15.text()
+        link_para_trade = id
 
+        atualizador = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
+        atualizador.finalizar_tabela_trade(id, valor_de_saida, quantidade_de_saida, data_de_saida, self.ganho_real, self.ganho_percentual, self.acerto, link_para_trade)
 
-                
+    def listar_todos_os_trades(self):
+        # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
+            )
+            
+            cursor = db.cursor()
 
+            cursor.execute(f"SELECT * FROM lista_de_trades")
 
+            # Recupere os resultados
+            result = cursor.fetchall()
+
+            # Commit da transação
+            db.commit()
+
+            # Fechar cursor e conexão
+            cursor.close()
+            db.close()
+
+        # Preencha a tabela na janela de "Dividendos"
+            self.ui_ordens.tableWidget_2.setRowCount(len(result))
+            for row_index, row_data in enumerate(result):
+                for col_index, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.ui_ordens.tableWidget_2.setItem(row_index, col_index, item)
 

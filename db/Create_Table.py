@@ -18,9 +18,9 @@ def criar_tabela():
         criar_tabela_sql = """
         CREATE TABLE IF NOT EXISTS lista_de_trades (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            valor_de_entrada FLOAT,
             simbolo VARCHAR(255),
-            quantidade DECIMAL(10, 2),
+            valor_de_entrada FLOAT,
+            quantidade_de_entrada DECIMAL(10, 2),
             data_de_entrada DATE,
             valor_dividendo FLOAT,
             valor_premio FLOAT,
@@ -29,9 +29,12 @@ def criar_tabela():
             coretora VARCHAR(50),
             moeda VARCHAR(50),
             valor_de_saida FLOAT,
+            quantidade_de_saida DECIMAL(10, 2),
+            data_de_saida DATE,
             ganho_real FLOAT,
             ganho_percentual FLOAT,
-            acerto VARCHAR(255)
+            acerto VARCHAR(255),
+            link_para_trade INT
         )
         """
         cursor.execute(criar_tabela_sql)

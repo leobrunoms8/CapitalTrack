@@ -364,7 +364,7 @@ class Ui_Window_Ordens(object):
         self.label_23.setText(_translate("Window_Ordens", "Ganho Percentual"))
         self.pushButton_7.setText(_translate("Window_Ordens", "Finalizar"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Window_Ordens", "Finalizar Trade"))
-        self.pushButton_4.setText(_translate("Window_Ordens", "Trades em Aberto"))
+        self.pushButton_4.setText(_translate("Window_Ordens", "Todos os Trades"))
         self.pushButton_6.setText(_translate("Window_Ordens", "Trades em Aberto"))
         item = self.tableWidget_2.horizontalHeaderItem(0)
         item.setText(_translate("Window_Ordens", "ID"))
