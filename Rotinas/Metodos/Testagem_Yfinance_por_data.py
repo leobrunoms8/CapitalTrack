@@ -322,7 +322,7 @@ class Testagem_Yfinance:
         simbolos_encontrados_segunda_tentativa = []
         simbolos_nao_encontrados =[]
         valor_dinamico = []
-        self.atualizacao = Atualizar_Tabelas()
+        self.atualizacao = Atualizar_Tabelas(self.host, self.user, self.password, self.database)
 
         cursor.close()
         db.close()
