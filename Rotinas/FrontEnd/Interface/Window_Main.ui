@@ -235,6 +235,7 @@
     <addaction name="actionGr_ficos"/>
     <addaction name="actionOrdens"/>
     <addaction name="actionModos"/>
+    <addaction name="actionCalend_rio"/>
    </widget>
    <widget class="QMenu" name="menuOrdens">
     <property name="title">
@@ -329,6 +330,11 @@
   <action name="actionModos">
    <property name="text">
     <string>Modos</string>
+   </property>
+  </action>
+  <action name="actionCalend_rio">
+   <property name="text">
+    <string>Calendário</string>
    </property>
   </action>
  </widget>

@@ -143,6 +143,8 @@ class Ui_MainWindow(object):
         self.actionOrdens.setObjectName("actionOrdens")
         self.actionModos = QtWidgets.QAction(MainWindow)
         self.actionModos.setObjectName("actionModos")
+        self.actionCalend_rio = QtWidgets.QAction(MainWindow)
+        self.actionCalend_rio.setObjectName("actionCalend_rio")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addSeparator()
@@ -156,6 +158,7 @@ class Ui_MainWindow(object):
         self.menuExibir.addAction(self.actionGr_ficos)
         self.menuExibir.addAction(self.actionOrdens)
         self.menuExibir.addAction(self.actionModos)
+        self.menuExibir.addAction(self.actionCalend_rio)
         self.menuOrdens.addAction(self.actionCriar)
         self.menuOrdens.addAction(self.actionEditar_2)
         self.menuOrdens.addAction(self.actionLer_Ordem)
@@ -213,6 +216,7 @@ class Ui_MainWindow(object):
         self.actionChat_Ordens.setText(_translate("MainWindow", "Chat Ordens"))
         self.actionOrdens.setText(_translate("MainWindow", "Ordens"))
         self.actionModos.setText(_translate("MainWindow", "Modos"))
+        self.actionCalend_rio.setText(_translate("MainWindow", "Calendário"))
 
 
 if __name__ == "__main__":
