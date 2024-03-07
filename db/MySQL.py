@@ -13,7 +13,7 @@ def criar_banco_de_dados():
         cursor = conexao.cursor()
 
         # Comando SQL para criar o banco de dados "Stocks"
-        comando_sql = "CREATE DATABASE IF NOT EXISTS Stocks"
+        comando_sql = "CREATE DATABASE IF NOT EXISTS raspagempuradedados"
 
         # Executa o comando SQL
         cursor.execute(comando_sql)

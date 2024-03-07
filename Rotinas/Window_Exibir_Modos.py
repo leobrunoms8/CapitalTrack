@@ -44,9 +44,9 @@ class Window_exibir_modos(QDialog):
         # Obtém a data e hora atual
         self.data_hora_atual = QDateTime.currentDateTime()
         # Formata a data e hora como string
-        data_hora_formatada = self.data_hora_atual.toString("dd/MM/yyyy HH:mm:ss")
+        self.data_hora_formatada = self.data_hora_atual.toString("dd/MM/yyyy HH:mm:ss")
         # Define a string formatada como texto da label
-        self.ui_modos.label_4.setText(data_hora_formatada)
+        self.ui_modos.label_4.setText(self.data_hora_formatada)
 
         # Verifica estado da seletora
         if self.modo == 'auto':
@@ -57,7 +57,7 @@ class Window_exibir_modos(QDialog):
     def modo_automatico(self):
         hora_formatada = self.data_hora_atual.toString("HH:mm:ss")
         self.ui_modos.label_2.setText('Modo Automático')
-        texto = self.gerenciador.atualizar_data_hora(hora_formatada)
+        texto = self.gerenciador.atualizar_data_hora(hora_formatada, self.data_hora_formatada)
         self.ui_modos.label_6.setText(texto)
     
     def modo_manual(self):

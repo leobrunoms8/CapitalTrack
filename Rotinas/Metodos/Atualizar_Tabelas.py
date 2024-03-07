@@ -187,3 +187,40 @@ class Atualizar_Tabelas:
            
         except mysql.connector.Error as err:
             print("Erro ao inserir na tabela:", err)
+
+    def atualizar_log_em_tabela (self, log, data_hora):
+        try:
+            # Conecte ao banco de dados MySQL
+            db = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
+            )
+            
+            cursor = db.cursor()
+
+            
+            # Query de atualização de dados
+            update_query = """
+            INSERT INTO log_automatico (
+                log, 
+                data
+            ) VALUES (%s, %s)
+            """
+
+            # Valores para atualização na tabela
+            values = (log, data_hora)
+
+            # Executar a consulta de inserção
+            cursor.execute(update_query, values)
+
+            # Commit da transação
+            db.commit()
+
+            # Fechar cursor e conexão
+            cursor.close()
+            db.close()
+           
+        except mysql.connector.Error as err:
+            print("Erro ao inserir na tabela:", err)
